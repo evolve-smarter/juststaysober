@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- Background circle -->
+  <circle cx="256" cy="256" r="256" fill="#0d1117"/>
+  <!-- Mint green outer ring -->
+  <circle cx="256" cy="256" r="220" fill="none" stroke="#4FFFB0" stroke-width="8" opacity="0.3"/>
+  <!-- Infinity symbol -->
+  <path d="M160 256 C160 220 185 195 220 195 C255 195 270 228 256 256 C242 284 195 317 160 256 Z
+           M352 256 C352 220 327 195 292 195 C257 195 242 228 256 256 C270 284 317 317 352 256 Z"
+        fill="none" stroke="#4FFFB0" stroke-width="22" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

@@ -1,0 +1,1252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Find AA, NA, SMART Recovery, Al-Anon, and 10+ recovery pathways near you — plus a 24/7 AI companion for the moments between meetings." />
+  <meta name="theme-color" content="#4FFFB0" />
+  <title>Just Stay Sober — Every Meeting. Every Path. One Place.</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0d1117;
+      --bg-2: #111820;
+      --bg-3: #161d27;
+      --mint: #4FFFB0;
+      --mint-dim: rgba(79, 255, 176, 0.12);
+      --mint-border: rgba(79, 255, 176, 0.2);
+      --purple: #7B61FF;
+      --purple-dim: rgba(123, 97, 255, 0.12);
+      --text: #e8edf3;
+      --text-muted: #7a8a9a;
+      --text-dim: #4a5568;
+      --border: rgba(255,255,255,0.07);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Outfit', system-ui, sans-serif;
+      font-size: 16px;
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    /* ─── NAV ─── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      padding: 1.25rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(13, 17, 23, 0.8);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav-logo {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--text);
+      letter-spacing: -0.01em;
+    }
+
+    .nav-logo span { color: var(--mint); }
+
+    .nav-cta {
+      background: var(--mint);
+      color: #0d1117;
+      font-family: 'Outfit', sans-serif;
+      font-weight: 600;
+      font-size: 0.875rem;
+      padding: 0.6rem 1.4rem;
+      border-radius: 100px;
+      border: none;
+      cursor: pointer;
+      text-decoration: none;
+      transition: transform 0.2s cubic-bezier(0.16,1,0.3,1), opacity 0.2s;
+      display: inline-block;
+    }
+
+    .nav-cta:hover { opacity: 0.9; transform: translateY(-1px); }
+    .nav-cta:active { transform: scale(0.98) translateY(0); }
+
+    /* ─── HERO ─── */
+    #hero {
+      min-height: 100dvh;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      align-items: center;
+      position: relative;
+      overflow: hidden;
+      padding-top: 5rem;
+    }
+
+    #particle-canvas {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 1;
+      padding: 4rem 3rem 4rem 5vw;
+      max-width: 680px;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: var(--mint-dim);
+      border: 1px solid var(--mint-border);
+      color: var(--mint);
+      font-size: 0.8rem;
+      font-weight: 500;
+      padding: 0.4rem 0.9rem;
+      border-radius: 100px;
+      margin-bottom: 2rem;
+      letter-spacing: 0.04em;
+    }
+
+    .hero-badge-dot {
+      width: 6px; height: 6px;
+      background: var(--mint);
+      border-radius: 50%;
+      animation: pulse-dot 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse-dot {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(0.7); }
+    }
+
+    .hero-headline {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2.4rem, 4.5vw, 4rem);
+      font-weight: 900;
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+      color: var(--text);
+      margin-bottom: 1.5rem;
+    }
+
+    .hero-headline em {
+      font-style: italic;
+      color: var(--mint);
+    }
+
+    .hero-subhead {
+      font-size: 1.05rem;
+      color: var(--text-muted);
+      line-height: 1.7;
+      max-width: 52ch;
+      margin-bottom: 2.5rem;
+      font-weight: 300;
+    }
+
+    .hero-form {
+      display: flex;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+      margin-bottom: 1.5rem;
+    }
+
+    .hero-input {
+      flex: 1;
+      min-width: 220px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.12);
+      color: var(--text);
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.95rem;
+      padding: 0.85rem 1.25rem;
+      border-radius: 100px;
+      outline: none;
+      transition: border-color 0.2s, background 0.2s;
+    }
+
+    .hero-input::placeholder { color: var(--text-dim); }
+    .hero-input:focus {
+      border-color: var(--mint-border);
+      background: rgba(79,255,176,0.05);
+    }
+
+    .btn-mint {
+      background: var(--mint);
+      color: #0d1117;
+      font-family: 'Outfit', sans-serif;
+      font-weight: 600;
+      font-size: 0.95rem;
+      padding: 0.85rem 2rem;
+      border-radius: 100px;
+      border: none;
+      cursor: pointer;
+      transition: transform 0.2s cubic-bezier(0.16,1,0.3,1), box-shadow 0.2s;
+      white-space: nowrap;
+    }
+
+    .btn-mint:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 30px rgba(79,255,176,0.25);
+    }
+
+    .btn-mint:active { transform: scale(0.98); }
+
+    .hero-thanks {
+      display: none;
+      color: var(--mint);
+      font-size: 0.95rem;
+      font-weight: 500;
+      padding: 0.85rem 1.5rem;
+      background: var(--mint-dim);
+      border: 1px solid var(--mint-border);
+      border-radius: 12px;
+      animation: fadeSlideUp 0.4s cubic-bezier(0.16,1,0.3,1);
+    }
+
+    @keyframes fadeSlideUp {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .hero-social-proof {
+      font-size: 0.82rem;
+      color: var(--text-dim);
+    }
+
+    .hero-social-proof span { color: var(--mint); }
+
+    .hero-visual {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 4rem 5vw 4rem 2rem;
+    }
+
+    .hero-phone-mockup {
+      width: 280px;
+      height: 560px;
+      background: var(--bg-2);
+      border-radius: 36px;
+      border: 1px solid var(--border);
+      overflow: hidden;
+      position: relative;
+      box-shadow: 0 40px 80px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.06);
+      animation: float 6s ease-in-out infinite;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-12px); }
+    }
+
+    .mockup-header {
+      background: var(--bg-3);
+      padding: 1.2rem 1.2rem 0.8rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .mockup-logo {
+      font-family: 'Playfair Display', serif;
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .mockup-logo span { color: var(--mint); }
+
+    .mockup-body { padding: 1rem; }
+
+    .mockup-days {
+      text-align: center;
+      padding: 1rem 0;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 0.8rem;
+    }
+
+    .mockup-days-num {
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: var(--mint);
+      font-family: 'Outfit', sans-serif;
+      line-height: 1;
+    }
+
+    .mockup-days-label {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-top: 0.25rem;
+    }
+
+    .mockup-meeting {
+      background: var(--bg-3);
+      border-radius: 10px;
+      padding: 0.7rem;
+      margin-bottom: 0.5rem;
+      border: 1px solid var(--border);
+    }
+
+    .mockup-meeting-name {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 0.2rem;
+    }
+
+    .mockup-meeting-meta {
+      font-size: 0.65rem;
+      color: var(--text-muted);
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .mockup-tag {
+      display: inline-block;
+      background: var(--mint-dim);
+      color: var(--mint);
+      font-size: 0.6rem;
+      font-weight: 600;
+      padding: 0.15rem 0.5rem;
+      border-radius: 100px;
+      letter-spacing: 0.04em;
+    }
+
+    .hero-ring {
+      position: absolute;
+      border-radius: 50%;
+      border: 1px solid var(--mint-border);
+      pointer-events: none;
+      opacity: 0.4;
+    }
+
+    .ring-1 { width: 420px; height: 420px; top: 50%; left: 50%; transform: translate(-50%, -50%); animation: ring-expand 4s ease-in-out infinite; }
+    .ring-2 { width: 560px; height: 560px; top: 50%; left: 50%; transform: translate(-50%, -50%); animation: ring-expand 4s ease-in-out infinite 1.3s; }
+    .ring-3 { width: 700px; height: 700px; top: 50%; left: 50%; transform: translate(-50%, -50%); animation: ring-expand 4s ease-in-out infinite 2.6s; }
+
+    @keyframes ring-expand {
+      0% { opacity: 0; transform: translate(-50%, -50%) scale(0.85); }
+      50% { opacity: 0.35; }
+      100% { opacity: 0; transform: translate(-50%, -50%) scale(1.05); }
+    }
+
+    /* ─── SECTIONS SHARED ─── */
+    section { padding: 7rem 5vw; }
+
+    .section-label {
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--mint);
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      margin-bottom: 1rem;
+    }
+
+    .section-title {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2rem, 3.5vw, 3rem);
+      font-weight: 700;
+      line-height: 1.2;
+      letter-spacing: -0.02em;
+      color: var(--text);
+      margin-bottom: 1.25rem;
+    }
+
+    .section-title em { font-style: italic; color: var(--mint); }
+
+    /* ─── PROBLEM SECTION ─── */
+    #problem {
+      background: var(--bg-2);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .problem-layout {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 1.4fr;
+      gap: 6rem;
+      align-items: start;
+    }
+
+    .problem-left .section-title { max-width: 16ch; }
+
+    .problem-stat {
+      margin-top: 2.5rem;
+      padding: 1.5rem;
+      background: rgba(79,255,176,0.06);
+      border: 1px solid var(--mint-border);
+      border-radius: 16px;
+    }
+
+    .problem-stat-num {
+      font-family: 'Playfair Display', serif;
+      font-size: 2.5rem;
+      font-weight: 900;
+      color: var(--mint);
+      line-height: 1;
+      margin-bottom: 0.5rem;
+    }
+
+    .problem-stat-text {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    .pain-points {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .pain-point {
+      padding: 1.75rem 0;
+      border-bottom: 1px solid var(--border);
+      display: grid;
+      grid-template-columns: 3rem 1fr;
+      gap: 1.25rem;
+      align-items: start;
+    }
+
+    .pain-point:first-child { padding-top: 0; }
+
+    .pain-icon {
+      width: 3rem; height: 3rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--bg-3);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      flex-shrink: 0;
+    }
+
+    .pain-icon svg { width: 1.25rem; height: 1.25rem; stroke: var(--mint); fill: none; stroke-width: 1.5; }
+
+    .pain-title {
+      font-weight: 600;
+      font-size: 1rem;
+      color: var(--text);
+      margin-bottom: 0.35rem;
+    }
+
+    .pain-desc {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+
+    /* ─── FEATURES ─── */
+    #features {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .features-header {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4rem;
+      align-items: end;
+      margin-bottom: 4rem;
+    }
+
+    .features-intro {
+      font-size: 1rem;
+      color: var(--text-muted);
+      line-height: 1.7;
+      max-width: 44ch;
+    }
+
+    .coming-soon-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      background: var(--purple-dim);
+      border: 1px solid rgba(123,97,255,0.25);
+      color: var(--purple);
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 0.35rem 0.8rem;
+      border-radius: 100px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      margin-top: 1.25rem;
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr;
+      grid-template-rows: auto auto;
+      gap: 1.25rem;
+    }
+
+    .feature-card {
+      background: var(--bg-2);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 2rem;
+      position: relative;
+      overflow: hidden;
+      transition: border-color 0.3s, transform 0.3s cubic-bezier(0.16,1,0.3,1);
+    }
+
+    .feature-card:hover {
+      border-color: rgba(79,255,176,0.15);
+      transform: translateY(-3px);
+    }
+
+    .feature-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 20px;
+      background: radial-gradient(circle at var(--mx, 50%) var(--my, 50%), rgba(79,255,176,0.04), transparent 60%);
+      opacity: 0;
+      transition: opacity 0.3s;
+      pointer-events: none;
+    }
+
+    .feature-card:hover::before { opacity: 1; }
+
+    .feature-card.wide { grid-column: 1; }
+
+    .feature-icon {
+      width: 2.75rem; height: 2.75rem;
+      border-radius: 12px;
+      background: var(--bg-3);
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 1.25rem;
+    }
+
+    .feature-icon svg {
+      width: 1.3rem; height: 1.3rem;
+      stroke-width: 1.5;
+      fill: none;
+    }
+
+    .icon-mint { stroke: var(--mint); }
+    .icon-purple { stroke: var(--purple); }
+
+    .feature-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 0.6rem;
+      letter-spacing: -0.01em;
+    }
+
+    .feature-desc {
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      line-height: 1.65;
+    }
+
+    .feature-card.wide .feature-desc { max-width: 38ch; }
+
+    .feature-tag {
+      display: inline-block;
+      font-size: 0.7rem;
+      font-weight: 600;
+      padding: 0.25rem 0.65rem;
+      border-radius: 100px;
+      margin-top: 1rem;
+      letter-spacing: 0.04em;
+    }
+
+    .tag-mint { background: var(--mint-dim); color: var(--mint); border: 1px solid var(--mint-border); }
+    .tag-purple { background: var(--purple-dim); color: var(--purple); border: 1px solid rgba(123,97,255,0.25); }
+
+    /* ─── WHO BUILT THIS ─── */
+    #story {
+      background: var(--bg-2);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .story-layout {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 1.5fr;
+      gap: 6rem;
+      align-items: center;
+    }
+
+    .story-illustration {
+      aspect-ratio: 4/5;
+      border-radius: 24px;
+      background: linear-gradient(135deg, var(--bg-3) 0%, rgba(79,255,176,0.06) 100%);
+      border: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .story-illustration::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 40%;
+      background: linear-gradient(to top, rgba(79,255,176,0.08), transparent);
+    }
+
+    .story-avatar-svg {
+      width: 120px;
+      opacity: 0.9;
+    }
+
+    .story-caption {
+      font-size: 0.8rem;
+      color: var(--mint);
+      font-weight: 500;
+      letter-spacing: 0.04em;
+      z-index: 1;
+    }
+
+    .story-content .section-title { max-width: 22ch; }
+
+    .story-body {
+      font-size: 1rem;
+      color: var(--text-muted);
+      line-height: 1.8;
+      margin-bottom: 1.25rem;
+      max-width: 52ch;
+    }
+
+    .story-body strong {
+      color: var(--text);
+      font-weight: 500;
+    }
+
+    .story-quote {
+      padding: 1.5rem;
+      border-left: 2px solid var(--mint);
+      background: var(--mint-dim);
+      border-radius: 0 12px 12px 0;
+      margin-top: 2rem;
+    }
+
+    .story-quote p {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.1rem;
+      font-style: italic;
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    /* ─── WAITLIST CTA ─── */
+    #waitlist {
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .waitlist-glow {
+      position: absolute;
+      width: 600px; height: 600px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(79,255,176,0.06) 0%, transparent 70%);
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+    }
+
+    .waitlist-inner {
+      position: relative;
+      z-index: 1;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .waitlist-inner .section-title {
+      font-size: clamp(2rem, 4vw, 3.5rem);
+      margin-bottom: 1rem;
+    }
+
+    .waitlist-sub {
+      font-size: 1.05rem;
+      color: var(--text-muted);
+      max-width: 40ch;
+      margin: 0 auto 2.5rem;
+      font-weight: 300;
+    }
+
+    .waitlist-form {
+      display: flex;
+      gap: 0.75rem;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-bottom: 1rem;
+    }
+
+    .waitlist-input {
+      width: 300px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.12);
+      color: var(--text);
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.95rem;
+      padding: 0.9rem 1.5rem;
+      border-radius: 100px;
+      outline: none;
+      transition: border-color 0.2s, background 0.2s;
+    }
+
+    .waitlist-input::placeholder { color: var(--text-dim); }
+    .waitlist-input:focus {
+      border-color: var(--mint-border);
+      background: rgba(79,255,176,0.05);
+    }
+
+    .waitlist-thanks {
+      display: none;
+      color: var(--mint);
+      font-size: 1rem;
+      font-weight: 500;
+      padding: 1rem 2rem;
+      background: var(--mint-dim);
+      border: 1px solid var(--mint-border);
+      border-radius: 16px;
+      margin-top: 0;
+      animation: fadeSlideUp 0.4s cubic-bezier(0.16,1,0.3,1);
+    }
+
+    .waitlist-note {
+      font-size: 0.8rem;
+      color: var(--text-dim);
+    }
+
+    /* ─── FOOTER ─── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 2.5rem 5vw;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .footer-logo {
+      font-family: 'Playfair Display', serif;
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .footer-logo span { color: var(--mint); }
+
+    .footer-crisis {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--border);
+      padding: 0.5rem 1rem;
+      border-radius: 100px;
+      font-size: 0.82rem;
+      color: var(--text-muted);
+    }
+
+    .crisis-dot {
+      width: 7px; height: 7px;
+      background: #ff6b6b;
+      border-radius: 50%;
+      animation: pulse-dot 2s ease-in-out infinite;
+    }
+
+    .footer-right {
+      font-size: 0.82rem;
+      color: var(--text-dim);
+    }
+
+    /* ─── RESPONSIVE ─── */
+    @media (max-width: 900px) {
+      #hero { grid-template-columns: 1fr; min-height: auto; padding-top: 5rem; }
+      .hero-content { padding: 3rem 1.5rem 2rem; max-width: 100%; }
+      .hero-visual { display: none; }
+      .problem-layout { grid-template-columns: 1fr; gap: 3rem; }
+      .features-header { grid-template-columns: 1fr; gap: 1.5rem; }
+      .features-grid { grid-template-columns: 1fr; }
+      .feature-card.wide { grid-column: 1; }
+      .story-layout { grid-template-columns: 1fr; gap: 3rem; }
+      .story-illustration { aspect-ratio: 3/2; }
+      section { padding: 4rem 1.5rem; }
+      footer { flex-direction: column; align-items: flex-start; gap: 1.25rem; }
+      .waitlist-input { width: 100%; max-width: 380px; }
+    }
+
+    @media (max-width: 600px) {
+      nav { padding: 1rem 1.25rem; }
+      .hero-form { flex-direction: column; }
+      .hero-input { min-width: 0; width: 100%; }
+      .btn-mint { width: 100%; text-align: center; }
+      .waitlist-form { flex-direction: column; align-items: center; }
+    }
+
+    /* ─── REVEAL ANIMATION ─── */
+    .reveal {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.7s cubic-bezier(0.16,1,0.3,1), transform 0.7s cubic-bezier(0.16,1,0.3,1);
+    }
+
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav>
+    <div class="nav-logo">Just<span>Stay</span>Sober</div>
+    <a href="#waitlist" class="nav-cta">Join Waitlist</a>
+  </nav>
+
+  <!-- HERO -->
+  <section id="hero">
+    <canvas id="particle-canvas"></canvas>
+
+    <div class="hero-content">
+      <div class="hero-badge">
+        <div class="hero-badge-dot"></div>
+        Now building — waitlist open
+      </div>
+
+      <h1 class="hero-headline">
+        Every meeting.<br>
+        Every path.<br>
+        <em>One place.</em>
+      </h1>
+
+      <p class="hero-subhead">
+        Find AA, NA, SMART Recovery, Al-Anon, and 10+ recovery pathways near you — plus a 24/7 AI companion for the moments between meetings.
+      </p>
+
+      <div class="hero-form" id="hero-form-wrap">
+        <input
+          type="email"
+          class="hero-input"
+          placeholder="your@email.com"
+          id="hero-email"
+          autocomplete="email"
+        />
+        <button class="btn-mint" onclick="handleSignup('hero')">Join the Waitlist</button>
+      </div>
+      <div class="hero-thanks" id="hero-thanks">
+        You're in. We'll reach out when we launch — which is soon.
+      </div>
+
+      <p class="hero-social-proof">
+        <span>Recovery doesn't fit one fellowship.</span> Neither should your app.
+      </p>
+    </div>
+
+    <div class="hero-visual">
+      <div class="hero-ring ring-1"></div>
+      <div class="hero-ring ring-2"></div>
+      <div class="hero-ring ring-3"></div>
+
+      <div class="hero-phone-mockup">
+        <div class="mockup-header">
+          <div class="mockup-logo">Just<span>Stay</span>Sober</div>
+        </div>
+        <div class="mockup-body">
+          <div class="mockup-days">
+            <div class="mockup-days-num">847</div>
+            <div class="mockup-days-label">Days Sober</div>
+          </div>
+          <div class="mockup-meeting">
+            <div class="mockup-meeting-name">Serenity Group — AA</div>
+            <div class="mockup-meeting-meta">
+              <span>Tonight 7:30 PM</span>
+              <span class="mockup-tag">0.4 mi</span>
+            </div>
+          </div>
+          <div class="mockup-meeting">
+            <div class="mockup-meeting-name">Monday SMART Meeting</div>
+            <div class="mockup-meeting-meta">
+              <span>Mon 6:00 PM</span>
+              <span class="mockup-tag">1.2 mi</span>
+            </div>
+          </div>
+          <div class="mockup-meeting">
+            <div class="mockup-meeting-name">Al-Anon Family Group</div>
+            <div class="mockup-meeting-meta">
+              <span>Tue 7:00 PM</span>
+              <span class="mockup-tag">0.8 mi</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- THE PROBLEM -->
+  <section id="problem">
+    <div class="problem-layout">
+      <div class="problem-left reveal">
+        <div class="section-label">The Problem</div>
+        <h2 class="section-title">Most meeting apps only show <em>one</em> fellowship.</h2>
+        <p style="color: var(--text-muted); font-size: 0.95rem; line-height: 1.7; max-width: 36ch;">
+          Recovery doesn't work that way. People in recovery often need multiple pathways — and no single app shows them all.
+        </p>
+
+        <div class="problem-stat reveal" style="transition-delay: 0.15s;">
+          <div class="problem-stat-num">6 million</div>
+          <div class="problem-stat-text">Americans in active recovery. Zero apps that show all their options in one search.</div>
+        </div>
+      </div>
+
+      <div class="pain-points">
+        <div class="pain-point reveal" style="transition-delay: 0.05s;">
+          <div class="pain-icon">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+          </div>
+          <div>
+            <div class="pain-title">AA apps don't show SMART meetings</div>
+            <div class="pain-desc">Someone who benefits from both 12-step and secular recovery has to use two apps — or miss half their options entirely.</div>
+          </div>
+        </div>
+
+        <div class="pain-point reveal" style="transition-delay: 0.1s;">
+          <div class="pain-icon">
+            <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          </div>
+          <div>
+            <div class="pain-title">NA apps don't show Al-Anon</div>
+            <div class="pain-desc">Family members seeking support are invisible in addiction-focused apps. Loved ones need meetings too.</div>
+          </div>
+        </div>
+
+        <div class="pain-point reveal" style="transition-delay: 0.15s;">
+          <div class="pain-icon">
+            <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+          </div>
+          <div>
+            <div class="pain-title">No app shows therapy groups, IOPs, and sober livings together</div>
+            <div class="pain-desc">The full continuum of care — from peer support to clinical treatment — is scattered across a dozen platforms and phone calls.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- WHAT'S COMING -->
+  <section id="features" style="max-width: none; padding: 7rem 5vw;">
+    <div style="max-width: 1200px; margin: 0 auto;">
+      <div class="features-header reveal">
+        <div>
+          <div class="section-label">What's Coming</div>
+          <h2 class="section-title">Built for the full<br><em>recovery journey.</em></h2>
+        </div>
+        <div>
+          <p class="features-intro">
+            Every feature is designed around one truth: recovery is not one-size-fits-all. Just Stay Sober meets you where you are.
+          </p>
+          <div class="coming-soon-badge">
+            <svg width="8" height="8" viewBox="0 0 8 8" fill="currentColor"><circle cx="4" cy="4" r="4"/></svg>
+            Launching soon
+          </div>
+        </div>
+      </div>
+
+      <div class="features-grid">
+        <!-- Wide card -->
+        <div class="feature-card wide reveal" style="transition-delay: 0.05s;" onmousemove="handleCardGlow(event, this)">
+          <div class="feature-icon">
+            <svg class="icon-mint" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          </div>
+          <div class="feature-title">Universal Meeting Map</div>
+          <p class="feature-desc">Every AA, NA, CA, MA, Al-Anon, SMART Recovery, Celebrate Recovery, and therapy group on a single map. Filter by fellowship, time, distance, and meeting type — all at once.</p>
+          <span class="feature-tag tag-mint">Core Feature</span>
+        </div>
+
+        <!-- Small cards -->
+        <div class="feature-card reveal" style="transition-delay: 0.1s;" onmousemove="handleCardGlow(event, this)">
+          <div class="feature-icon">
+            <svg class="icon-purple" viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 10 10H12V2z"/><path d="M12 2a10 10 0 0 1 10 10"/></svg>
+          </div>
+          <div class="feature-title">Sober Guide AI</div>
+          <p class="feature-desc">24/7 companion for cravings, hard nights, and the space between meetings.</p>
+          <span class="feature-tag tag-purple">AI Companion</span>
+        </div>
+
+        <div class="feature-card reveal" style="transition-delay: 0.15s;" onmousemove="handleCardGlow(event, this)">
+          <div class="feature-icon">
+            <svg class="icon-mint" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+          </div>
+          <div class="feature-title">Milestone Tracker</div>
+          <p class="feature-desc">Sobriety counter with community celebration and milestone badges.</p>
+          <span class="feature-tag tag-mint">Accountability</span>
+        </div>
+
+        <div class="feature-card reveal" style="transition-delay: 0.2s;" onmousemove="handleCardGlow(event, this)">
+          <div class="feature-icon">
+            <svg class="icon-purple" viewBox="0 0 24 24"><path d="M20 12V22H4V12"/><path d="M22 7H2v5h20V7z"/><path d="M12 22V7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg>
+          </div>
+          <div class="feature-title">Recovery Gifts</div>
+          <p class="feature-desc">Milestone gifts from Grateful Gestures — meaningful tokens for every anniversary.</p>
+          <span class="feature-tag tag-purple">Community</span>
+        </div>
+
+        <div class="feature-card reveal" style="transition-delay: 0.25s;" onmousemove="handleCardGlow(event, this)">
+          <div class="feature-icon">
+            <svg class="icon-mint" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><rect x="9" y="14" width="6" height="8"/></svg>
+          </div>
+          <div class="feature-title">Treatment Directory</div>
+          <p class="feature-desc">Find IOPs, sober livings, detox centers, and luxury rehabs — all in one search.</p>
+          <span class="feature-tag tag-mint">Treatment</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- WHO BUILT THIS -->
+  <section id="story">
+    <div class="story-layout">
+      <div class="story-illustration reveal">
+        <svg class="story-avatar-svg" viewBox="0 0 200 240" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <!-- Warm illustrated figure -->
+          <circle cx="100" cy="70" r="45" fill="rgba(79,255,176,0.1)" stroke="rgba(79,255,176,0.3)" stroke-width="1.5"/>
+          <circle cx="100" cy="65" r="28" fill="rgba(79,255,176,0.15)" stroke="rgba(79,255,176,0.4)" stroke-width="1"/>
+          <!-- Simple face: warm, human -->
+          <path d="M88 63 Q100 78 112 63" stroke="rgba(79,255,176,0.6)" stroke-width="2" fill="none" stroke-linecap="round"/>
+          <circle cx="91" cy="58" r="2.5" fill="rgba(79,255,176,0.5)"/>
+          <circle cx="109" cy="58" r="2.5" fill="rgba(79,255,176,0.5)"/>
+          <!-- Body -->
+          <path d="M62 140 Q65 120 75 115 Q88 110 100 112 Q112 110 125 115 Q135 120 138 140 L138 200 Q138 210 130 212 L70 212 Q62 210 62 200 Z" fill="rgba(79,255,176,0.06)" stroke="rgba(79,255,176,0.2)" stroke-width="1"/>
+          <!-- Arms -->
+          <path d="M75 125 Q55 145 52 165" stroke="rgba(79,255,176,0.3)" stroke-width="8" stroke-linecap="round" fill="none"/>
+          <path d="M125 125 Q145 145 148 165" stroke="rgba(79,255,176,0.3)" stroke-width="8" stroke-linecap="round" fill="none"/>
+          <!-- Meeting chip -->
+          <rect x="60" y="175" width="80" height="28" rx="8" fill="rgba(79,255,176,0.12)" stroke="rgba(79,255,176,0.3)" stroke-width="1"/>
+          <text x="100" y="194" text-anchor="middle" fill="rgba(79,255,176,0.8)" font-size="10" font-family="Outfit,sans-serif" font-weight="600">IN RECOVERY</text>
+        </svg>
+        <div class="story-caption">Working in recovery every day</div>
+      </div>
+
+      <div class="story-content reveal" style="transition-delay: 0.1s;">
+        <div class="section-label">Who Built This</div>
+        <h2 class="section-title">Built by someone who takes clients to meetings <em>every week.</em></h2>
+
+        <p class="story-body">
+          This app started from a real frustration: <strong>watching clients in early recovery struggle to find the right meeting.</strong> Not just any meeting — the right one. The kind that fits where they are, what they believe, and who they are.
+        </p>
+
+        <p class="story-body">
+          Someone coming off opioids might need NA on Monday and a SMART meeting on Thursday. Someone with a family member struggling needs Al-Anon — but the AA app they downloaded doesn't show it. Someone leaving treatment needs an IOP — but there's no app that shows IOPs, meetings, and sober livings together.
+        </p>
+
+        <p class="story-body">
+          Every week, I watch people use Google, phone trees, and word-of-mouth to piece together resources that should just <em>exist</em> in one place. That's why Just Stay Sober is being built.
+        </p>
+
+        <div class="story-quote">
+          <p>"Recovery is hard enough. Finding a meeting shouldn't be."</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- WAITLIST CTA -->
+  <section id="waitlist">
+    <div class="waitlist-glow"></div>
+    <div class="waitlist-inner reveal">
+      <div class="section-label" style="text-align: center;">Early Access</div>
+      <h2 class="section-title" style="text-align: center;">Be the first to find<br><em>every meeting.</em></h2>
+      <p class="waitlist-sub">We're building fast. Get notified when Just Stay Sober launches — and help shape what it becomes.</p>
+
+      <div class="waitlist-form" id="waitlist-form-wrap">
+        <input
+          type="email"
+          class="waitlist-input"
+          placeholder="your@email.com"
+          id="waitlist-email"
+          autocomplete="email"
+        />
+        <button class="btn-mint" onclick="handleSignup('waitlist')">Join Waitlist</button>
+      </div>
+      <div class="waitlist-thanks" id="waitlist-thanks">
+        You're in. We'll reach out when we launch — which is soon.
+      </div>
+      <p class="waitlist-note">No spam. Just one email when we launch.</p>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-logo">Just<span>Stay</span>Sober<span style="color: var(--text-dim); font-family: Outfit, sans-serif; font-size: 0.75rem; font-weight: 400; margin-left: 0.75rem;">A BEQPROD Project</span></div>
+
+    <div class="footer-crisis">
+      <div class="crisis-dot"></div>
+      If you're in crisis, call or text <strong style="color: var(--text); margin-left: 0.2rem;">988</strong>
+    </div>
+
+    <div class="footer-right">
+      &copy; 2025 BEQPROD LLC &middot; juststaysober.com
+    </div>
+  </footer>
+
+  <script>
+    // ─── EMAIL SIGNUP ───
+    function handleSignup(form) {
+      const emailId = form === 'hero' ? 'hero-email' : 'waitlist-email';
+      const formWrapId = form === 'hero' ? 'hero-form-wrap' : 'waitlist-form-wrap';
+      const thanksId = form === 'hero' ? 'hero-thanks' : 'waitlist-thanks';
+
+      const email = document.getElementById(emailId).value.trim();
+      if (!email || !email.includes('@')) {
+        document.getElementById(emailId).style.borderColor = 'rgba(255,107,107,0.5)';
+        setTimeout(() => { document.getElementById(emailId).style.borderColor = ''; }, 2000);
+        return;
+      }
+
+      // Store in localStorage
+      const signups = JSON.parse(localStorage.getItem('jss_waitlist') || '[]');
+      if (!signups.includes(email)) {
+        signups.push(email);
+        localStorage.setItem('jss_waitlist', JSON.stringify(signups));
+      }
+
+      document.getElementById(formWrapId).style.display = 'none';
+      const thanks = document.getElementById(thanksId);
+      thanks.style.display = 'block';
+      if (form === 'hero') {
+        document.querySelector('.hero-social-proof').style.display = 'none';
+      }
+    }
+
+    // Allow enter key in inputs
+    document.addEventListener('DOMContentLoaded', () => {
+      document.getElementById('hero-email').addEventListener('keydown', e => { if (e.key === 'Enter') handleSignup('hero'); });
+      document.getElementById('waitlist-email').addEventListener('keydown', e => { if (e.key === 'Enter') handleSignup('waitlist'); });
+    });
+
+    // ─── PARTICLE CANVAS ───
+    const canvas = document.getElementById('particle-canvas');
+    const ctx = canvas.getContext('2d');
+    let particles = [];
+    let W, H;
+
+    function resize() {
+      W = canvas.width = window.innerWidth;
+      H = canvas.height = window.innerHeight;
+    }
+
+    window.addEventListener('resize', resize);
+    resize();
+
+    class Particle {
+      constructor() { this.reset(); }
+      reset() {
+        this.x = Math.random() * W;
+        this.y = Math.random() * H;
+        this.r = Math.random() * 1.8 + 0.3;
+        this.alpha = Math.random() * 0.35 + 0.05;
+        this.vx = (Math.random() - 0.5) * 0.3;
+        this.vy = (Math.random() - 0.5) * 0.3;
+        this.life = 1;
+        this.decay = Math.random() * 0.002 + 0.001;
+      }
+      update() {
+        this.x += this.vx;
+        this.y += this.vy;
+        this.life -= this.decay;
+        if (this.life <= 0 || this.x < 0 || this.x > W || this.y < 0 || this.y > H) {
+          this.reset();
+          this.life = 1;
+        }
+      }
+      draw() {
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(79, 255, 176, ${this.alpha * this.life})`;
+        ctx.fill();
+      }
+    }
+
+    for (let i = 0; i < 80; i++) particles.push(new Particle());
+
+    function animate() {
+      ctx.clearRect(0, 0, W, H);
+      particles.forEach(p => { p.update(); p.draw(); });
+
+      // Subtle connection lines
+      for (let i = 0; i < particles.length; i++) {
+        for (let j = i + 1; j < particles.length; j++) {
+          const dx = particles[i].x - particles[j].x;
+          const dy = particles[i].y - particles[j].y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist < 100) {
+            ctx.beginPath();
+            ctx.moveTo(particles[i].x, particles[i].y);
+            ctx.lineTo(particles[j].x, particles[j].y);
+            ctx.strokeStyle = `rgba(79, 255, 176, ${0.06 * (1 - dist / 100)})`;
+            ctx.lineWidth = 0.5;
+            ctx.stroke();
+          }
+        }
+      }
+
+      requestAnimationFrame(animate);
+    }
+
+    animate();
+
+    // ─── CARD GLOW ───
+    function handleCardGlow(e, card) {
+      const rect = card.getBoundingClientRect();
+      const x = ((e.clientX - rect.left) / rect.width) * 100;
+      const y = ((e.clientY - rect.top) / rect.height) * 100;
+      card.style.setProperty('--mx', x + '%');
+      card.style.setProperty('--my', y + '%');
+    }
+
+    // ─── SCROLL REVEAL ───
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+
+    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+  </script>
+</body>
+</html>
