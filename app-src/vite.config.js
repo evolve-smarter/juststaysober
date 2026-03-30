@@ -3,7 +3,7 @@ import react from '@vitejs/plugin-react'
 import { VitePWA } from 'vite-plugin-pwa'
 
 export default defineConfig({
-  base: '/app/',
+  base: '/juststaysober/app/',
   plugins: [
     react(),
     VitePWA({
@@ -17,8 +17,8 @@ export default defineConfig({
         background_color: '#0d1117',
         display: 'standalone',
         orientation: 'portrait',
-        start_url: '/app/',
-        scope: '/app/',
+        start_url: '/juststaysober/app/',
+        scope: '/juststaysober/app/',
         icons: [
           {
             src: 'icon.svg',
