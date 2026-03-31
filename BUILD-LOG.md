@@ -72,9 +72,36 @@
 
 ---
 
+## Session 3 Progress (2026-03-31) — Nexus
+
+### What Was Built
+
+#### 1. Comprehensive Safety System Prompt (`SoberGuide.jsx`)
+- Replaced minimal system prompt with a full clinical-grade safety prompt
+- Explicitly defines what the AI IS (supportive companion, recovery info, meeting guidance) and IS NOT (therapist, medical professional, treatment replacement)
+- **Crisis Protocol:** AI instructed to immediately surface 988, Crisis Text Line (741741), and 911 when crisis language detected — then continue with emotional support
+- **Relapse Protocol:** AI responds with compassion, never shame; encourages sponsor/counselor/meeting
+- **Language Guidelines:** Person-first language, no shaming or lecturing, validate feelings first
+- **Boundaries:** Defers medical/legal/diagnostic questions to licensed professionals
+- **Tone guidance:** Warm, calm, hopeful, real — "like a friend in recovery who's been around a while"
+
+#### 2. Client-Side Crisis Keyword Detection (`SoberGuide.jsx`)
+- `CRISIS_KEYWORDS` array: suicide, kill myself, want to die, end it, overdose, od, harm myself, self harm, not worth living
+- `isCrisisMessage(text)` function runs BEFORE every API call
+- On detection: immediately shows a prominent red crisis banner in the UI with tap-to-call links for 988, Crisis Text Line, and 911
+- Crisis message still sent to AI (which follows crisis protocol in system prompt)
+- Banner is dismissible via × button
+
+#### 3. Dynamic Copyright Year
+- `index.html`: `&copy; 2025` → `&copy; <span id="footer-year"></span>` + JS sets `new Date().getFullYear()` on load
+- Will automatically update each year without code changes
+
+---
+
 ## Git Log
 
 ```
+a0e8eb1 feat: comprehensive safety system prompt + crisis detection + dynamic copyright
 d6d695c feat: Meeting Guide API, AI chat, onboarding, improved UI
 b53dba5 Add built PWA to /app/ + fix base paths for GitHub Pages
 249cdb5 Initial build: landing page + PWA scaffold
