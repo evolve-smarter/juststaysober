@@ -1,5 +1,11 @@
 import { useState, useRef, useEffect } from 'react'
 
+// Anthropic API key — embedded for PWA (client-side only, no backend yet)
+// In production, move this to a backend proxy
+const ANTHROPIC_KEY = import.meta.env.VITE_ANTHROPIC_KEY || ''
+
+const SYSTEM_PROMPT = `You are a compassionate recovery support companion. You provide emotional support, information about recovery pathways, and encouragement. You are not a replacement for professional treatment or a sponsor. You always encourage connection with human support. Keep responses warm, concise (2-4 sentences), and grounded. Never give medical advice. If someone is in crisis, always mention calling or texting 988.`
+
 const STUB_RESPONSES = [
   "I hear you. That sounds really hard. You don't have to be alone with this. Can you tell me more about what's going on?",
   "That craving is real, and it makes sense. Remember — cravings pass. Usually within 15-30 minutes. What can we do together right now to get through it?",
@@ -22,10 +28,43 @@ function formatTime(d) {
   return d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })
 }
 
+async function callAnthropic(messages) {
+  if (!ANTHROPIC_KEY) throw new Error('No API key configured')
+
+  const apiMessages = messages
+    .filter(m => m.id !== 'opener' || m.role === 'ai')
+    .map(m => ({ role: m.role === 'user' ? 'user' : 'assistant', content: m.text }))
+
+  const res = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': ANTHROPIC_KEY,
+      'anthropic-version': '2023-06-01',
+      'anthropic-dangerous-direct-browser-access': 'true',
+    },
+    body: JSON.stringify({
+      model: 'claude-haiku-4-5',
+      max_tokens: 300,
+      system: SYSTEM_PROMPT,
+      messages: apiMessages,
+    }),
+  })
+
+  if (!res.ok) {
+    const err = await res.text()
+    throw new Error(`Anthropic error ${res.status}: ${err.slice(0, 100)}`)
+  }
+
+  const data = await res.json()
+  return data.content?.[0]?.text || "I'm here with you."
+}
+
 export default function SoberGuide() {
   const [messages, setMessages] = useState([OPENER])
   const [input, setInput] = useState('')
   const [typing, setTyping] = useState(false)
+  const [apiEnabled, setApiEnabled] = useState(!!ANTHROPIC_KEY)
   const bottomRef = useRef(null)
   const inputRef = useRef(null)
   const responseIndex = useRef(0)
@@ -34,21 +73,36 @@ export default function SoberGuide() {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages, typing])
 
-  const sendMessage = () => {
+  const sendMessage = async () => {
     const text = input.trim()
-    if (!text) return
+    if (!text || typing) return
     setInput('')
 
     const userMsg = { id: Date.now(), role: 'user', text, ts: new Date() }
-    setMessages(prev => [...prev, userMsg])
+    const nextMessages = [...messages, userMsg]
+    setMessages(nextMessages)
     setTyping(true)
 
-    setTimeout(() => {
-      const response = STUB_RESPONSES[responseIndex.current % STUB_RESPONSES.length]
-      responseIndex.current++
-      setTyping(false)
+    try {
+      let response
+      if (apiEnabled && ANTHROPIC_KEY) {
+        response = await callAnthropic(nextMessages)
+      } else {
+        // Stub fallback
+        await new Promise(r => setTimeout(r, 1200 + Math.random() * 800))
+        response = STUB_RESPONSES[responseIndex.current % STUB_RESPONSES.length]
+        responseIndex.current++
+      }
       setMessages(prev => [...prev, { id: Date.now() + 1, role: 'ai', text: response, ts: new Date() }])
-    }, 1200 + Math.random() * 800)
+    } catch (err) {
+      console.warn('Sober Guide AI error:', err.message)
+      // Graceful fallback
+      const fallback = STUB_RESPONSES[responseIndex.current % STUB_RESPONSES.length]
+      responseIndex.current++
+      setMessages(prev => [...prev, { id: Date.now() + 1, role: 'ai', text: fallback, ts: new Date() }])
+    } finally {
+      setTyping(false)
+    }
   }
 
   return (
@@ -78,16 +132,31 @@ export default function SoberGuide() {
             borderRadius: '50%', border: '1.5px solid var(--bg)',
           }} />
         </div>
-        <div>
+        <div style={{ flex: 1 }}>
           <div style={{ fontWeight: 600, fontSize: '0.95rem' }}>Sober Guide</div>
-          <div style={{ fontSize: '0.72rem', color: 'var(--mint)', fontWeight: 500 }}>Online &middot; Available 24/7</div>
+          <div style={{ fontSize: '0.72rem', color: apiEnabled ? 'var(--mint)' : 'var(--text-muted)', fontWeight: 500 }}>
+            {apiEnabled ? 'AI · Available 24/7' : 'Companion mode · 24/7'}
+          </div>
         </div>
-        <div style={{ marginLeft: 'auto' }}>
-          <div style={{
-            background: 'var(--purple-dim)', border: '1px solid rgba(123,97,255,0.2)',
-            color: 'var(--purple)', fontSize: '0.7rem', fontWeight: 600,
-            padding: '0.25rem 0.65rem', borderRadius: '100px', letterSpacing: '0.04em',
-          }}>AI</div>
+        <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+          {!apiEnabled && (
+            <button
+              onClick={() => setApiEnabled(true)}
+              title="Enable AI responses"
+              style={{
+                background: 'var(--purple-dim)', border: '1px solid rgba(123,97,255,0.2)',
+                color: 'var(--purple)', fontSize: '0.7rem', fontWeight: 600,
+                padding: '0.25rem 0.65rem', borderRadius: '100px', letterSpacing: '0.04em',
+              }}
+            >AI OFF</button>
+          )}
+          {apiEnabled && (
+            <div style={{
+              background: 'var(--purple-dim)', border: '1px solid rgba(123,97,255,0.2)',
+              color: 'var(--purple)', fontSize: '0.7rem', fontWeight: 600,
+              padding: '0.25rem 0.65rem', borderRadius: '100px', letterSpacing: '0.04em',
+            }}>AI</div>
+          )}
         </div>
       </div>
 
@@ -99,7 +168,9 @@ export default function SoberGuide() {
         fontSize: '0.72rem', color: 'rgba(255,150,79,0.8)',
         flexShrink: 0,
       }}>
-        This is an AI companion, not a licensed therapist. In crisis? Call or text <strong>988</strong>.
+        AI companion, not a therapist. Crisis? Call or text{' '}
+        <a href="tel:988" style={{ color: 'rgba(255,150,79,0.9)', fontWeight: 700, textDecoration: 'none' }}>988</a>
+        {' '}anytime.
       </div>
 
       {/* Messages */}
@@ -163,7 +234,7 @@ export default function SoberGuide() {
         borderTop: '1px solid var(--border)',
         flexShrink: 0,
       }}>
-        {["I'm craving", "I need support", "I relapsed", "I'm doing okay"].map(q => (
+        {["I'm craving", "I need support", "I relapsed", "I'm doing okay", "Tell me about AA", "How do I find a sponsor?"].map(q => (
           <button
             key={q}
             onClick={() => { setInput(q); inputRef.current?.focus(); }}
@@ -171,6 +242,7 @@ export default function SoberGuide() {
               background: 'var(--bg-2)', border: '1px solid var(--border)',
               color: 'var(--text-muted)', fontSize: '0.75rem', padding: '0.4rem 0.8rem',
               borderRadius: '100px', whiteSpace: 'nowrap', flexShrink: 0,
+              transition: 'border-color 0.2s, color 0.2s',
             }}
           >
             {q}
@@ -201,17 +273,17 @@ export default function SoberGuide() {
         />
         <button
           onClick={sendMessage}
-          disabled={!input.trim()}
+          disabled={!input.trim() || typing}
           style={{
             width: '2.5rem', height: '2.5rem', borderRadius: '50%',
-            background: input.trim() ? 'var(--mint)' : 'var(--bg-2)',
-            border: `1px solid ${input.trim() ? 'transparent' : 'var(--border)'}`,
+            background: (input.trim() && !typing) ? 'var(--mint)' : 'var(--bg-2)',
+            border: `1px solid ${(input.trim() && !typing) ? 'transparent' : 'var(--border)'}`,
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             transition: 'all 0.2s', flexShrink: 0,
           }}
         >
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
-            stroke={input.trim() ? '#0d1117' : 'var(--text-muted)'}
+            stroke={(input.trim() && !typing) ? '#0d1117' : 'var(--text-muted)'}
             strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
           </svg>

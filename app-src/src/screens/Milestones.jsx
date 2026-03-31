@@ -1,5 +1,39 @@
 import { useState } from 'react'
 
+const DAILY_QUOTES = [
+  { text: "One day at a time.", source: "AA Program" },
+  { text: "Recovery is not a race. You don't have to feel guilty if it takes you longer than you thought.", source: "Anonymous" },
+  { text: "The first step towards getting somewhere is to decide you're not going to stay where you are.", source: "J.P. Morgan" },
+  { text: "No matter how far down the scale we have gone, we will see how our experience can benefit others.", source: "Big Book, p.84" },
+  { text: "Progress, not perfection.", source: "AA Slogan" },
+  { text: "Surrender to win.", source: "NA Slogan" },
+  { text: "We will intuitively know how to handle situations which used to baffle us.", source: "Big Book, p.84" },
+  { text: "This too shall pass.", source: "Recovery Tradition" },
+  { text: "Just for today, I will not use.", source: "NA Slogan" },
+  { text: "The only way out is through.", source: "Robert Frost" },
+  { text: "You didn't come this far to only come this far.", source: "Recovery Community" },
+  { text: "It works if you work it.", source: "AA Slogan" },
+  { text: "Keep coming back — it works!", source: "Meeting Closing" },
+  { text: "Easy does it, but do it.", source: "AA Slogan" },
+  { text: "Let go and let God.", source: "AA Slogan" },
+  { text: "Live and let live.", source: "AA Slogan" },
+  { text: "First things first.", source: "AA Slogan" },
+  { text: "Think, think, think.", source: "AA Slogan" },
+  { text: "To thine own self be true.", source: "AA Coins" },
+  { text: "Courage is not the absence of fear, but taking action in spite of it.", source: "Anonymous" },
+  { text: "Recovery is giving up the hope that the past could have been different.", source: "Anonymous" },
+  { text: "The willingness to do whatever it takes is the turning point.", source: "Anonymous" },
+  { text: "Sobriety is not a destination, it's a daily decision.", source: "Recovery Community" },
+  { text: "Every day you don't pick up is a miracle.", source: "Meeting Wisdom" },
+  { text: "You are not alone. You are never alone.", source: "AA Fellowship" },
+  { text: "The only requirement for membership is a desire to stop drinking.", source: "AA Tradition Three" },
+  { text: "God grant me the serenity to accept the things I cannot change.", source: "Serenity Prayer" },
+  { text: "Acceptance is the answer to all my problems today.", source: "Big Book, p.417" },
+  { text: "Rarely have we seen a person fail who has thoroughly followed our path.", source: "Big Book, p.58" },
+  { text: "We are not saints. The point is that we are willing to grow along spiritual lines.", source: "Big Book, p.60" },
+  { text: "Service to others is the rent we pay for our room here on earth.", source: "Muhammad Ali" },
+]
+
 const MILESTONES = [
   { id: '24h', label: '24 Hours', days: 1, icon: '◎', desc: 'The hardest step is the first one.' },
   { id: '30d', label: '30 Days', days: 30, icon: '◈', desc: 'A full month of choosing yourself.' },
@@ -34,6 +68,9 @@ export default function Milestones() {
   const [soberDate, setSoberDate] = useState(() => localStorage.getItem('jss_sober_date') || '')
   const [shared, setShared] = useState(null)
   const days = getDaysSober(soberDate)
+  // Rotate quote by day of year for daily variety
+  const dayOfYear = Math.floor((Date.now() - new Date(new Date().getFullYear(), 0, 0)) / 86400000)
+  const todayQuote = DAILY_QUOTES[dayOfYear % DAILY_QUOTES.length]
 
   const handleShare = (m) => {
     setShared(m.id)
@@ -195,16 +232,34 @@ export default function Milestones() {
         })}
       </div>
 
+      {/* Daily Quote */}
+      <div style={{
+        marginTop: '1.5rem', padding: '1.25rem',
+        background: 'var(--bg-2)', border: '1px solid var(--border)',
+        borderRadius: '16px',
+        borderLeft: '2px solid var(--mint)',
+      }}>
+        <div style={{ fontSize: '0.68rem', color: 'var(--mint)', fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: '0.6rem' }}>
+          Today's Reflection
+        </div>
+        <p style={{ fontFamily: "'Playfair Display', serif", fontStyle: 'italic', fontSize: '0.95rem', color: 'var(--text)', lineHeight: 1.6, marginBottom: '0.5rem' }}>
+          "{todayQuote.text}"
+        </p>
+        <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>— {todayQuote.source}</p>
+      </div>
+
       {/* Encouragement */}
       {days > 0 && (
         <div style={{
-          marginTop: '1.5rem', padding: '1.25rem',
+          marginTop: '1rem', padding: '1.25rem',
           background: 'var(--mint-dim)', border: '1px solid var(--mint-border)',
           borderRadius: '16px', textAlign: 'center',
         }}>
           <p style={{ fontFamily: "'Playfair Display', serif", fontStyle: 'italic', fontSize: '0.95rem', color: 'var(--text)', lineHeight: 1.6 }}>
             {days === 1 ? "Day one. The most important day of them all." :
+             days < 7 ? `${days} day${days !== 1 ? 's' : ''}. Every hour counts. You're doing it.` :
              days < 30 ? `${days} days. You're building something real.` :
+             days < 90 ? `${days} days. The momentum is yours now.` :
              days < 365 ? `${days} days. Every single one was a choice. Keep going.` :
              `${days} days sober. You are living proof that recovery works.`}
           </p>
