@@ -1,8 +1,8 @@
 import { useState, useRef, useEffect } from 'react'
 
-// Anthropic API key — embedded for PWA (client-side only, no backend yet)
-// In production, move this to a backend proxy
-const ANTHROPIC_KEY = import.meta.env.VITE_ANTHROPIC_KEY || ''
+// Cloudflare Worker proxy URL — keeps the Anthropic API key off the client
+// After deploying the worker, update this URL to your actual worker subdomain
+const PROXY_URL = 'https://juststaysober-proxy.beqprod.workers.dev'
 
 const SYSTEM_PROMPT = `You are a compassionate recovery support companion. You provide emotional support, information about recovery pathways, and encouragement. You are not a replacement for professional treatment or a sponsor. You always encourage connection with human support. Keep responses warm, concise (2-4 sentences), and grounded. Never give medical advice. If someone is in crisis, always mention calling or texting 988.`
 
@@ -29,19 +29,15 @@ function formatTime(d) {
 }
 
 async function callAnthropic(messages) {
-  if (!ANTHROPIC_KEY) throw new Error('No API key configured')
-
   const apiMessages = messages
     .filter(m => m.id !== 'opener' || m.role === 'ai')
     .map(m => ({ role: m.role === 'user' ? 'user' : 'assistant', content: m.text }))
 
-  const res = await fetch('https://api.anthropic.com/v1/messages', {
+  // Call our Cloudflare Worker proxy — no API key needed on the client
+  const res = await fetch(PROXY_URL, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'x-api-key': ANTHROPIC_KEY,
-      'anthropic-version': '2023-06-01',
-      'anthropic-dangerous-direct-browser-access': 'true',
     },
     body: JSON.stringify({
       model: 'claude-haiku-4-5',
@@ -53,10 +49,11 @@ async function callAnthropic(messages) {
 
   if (!res.ok) {
     const err = await res.text()
-    throw new Error(`Anthropic error ${res.status}: ${err.slice(0, 100)}`)
+    throw new Error(`Proxy error ${res.status}: ${err.slice(0, 100)}`)
   }
 
   const data = await res.json()
+  if (data.error) throw new Error(data.error)
   return data.content?.[0]?.text || "I'm here with you."
 }
 
@@ -64,7 +61,7 @@ export default function SoberGuide() {
   const [messages, setMessages] = useState([OPENER])
   const [input, setInput] = useState('')
   const [typing, setTyping] = useState(false)
-  const [apiEnabled, setApiEnabled] = useState(!!ANTHROPIC_KEY)
+  const [apiEnabled, setApiEnabled] = useState(true) // Always enabled — key lives in Cloudflare Worker proxy
   const bottomRef = useRef(null)
   const inputRef = useRef(null)
   const responseIndex = useRef(0)
@@ -85,7 +82,7 @@ export default function SoberGuide() {
 
     try {
       let response
-      if (apiEnabled && ANTHROPIC_KEY) {
+      if (apiEnabled) {
         response = await callAnthropic(nextMessages)
       } else {
         // Stub fallback
