@@ -1117,11 +1117,14 @@
     </div>
 
     <div class="footer-right">
-      &copy; 2025 BEQPROD LLC &middot; juststaysober.com
+      &copy; <span id="footer-year"></span> BEQPROD LLC &middot; juststaysober.com
     </div>
   </footer>
 
   <script>
+    // ─── DYNAMIC COPYRIGHT YEAR ───
+    document.getElementById('footer-year').textContent = new Date().getFullYear();
+
     // ─── EMAIL SIGNUP ───
     function handleSignup(form) {
       const emailId = form === 'hero' ? 'hero-email' : 'waitlist-email';

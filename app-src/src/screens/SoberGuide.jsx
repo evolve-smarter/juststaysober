@@ -4,7 +4,53 @@ import { useState, useRef, useEffect } from 'react'
 // After deploying the worker, update this URL to your actual worker subdomain
 const PROXY_URL = 'https://juststaysober-proxy.beqprod.workers.dev'
 
-const SYSTEM_PROMPT = `You are a compassionate recovery support companion. You provide emotional support, information about recovery pathways, and encouragement. You are not a replacement for professional treatment or a sponsor. You always encourage connection with human support. Keep responses warm, concise (2-4 sentences), and grounded. Never give medical advice. If someone is in crisis, always mention calling or texting 988.`
+// ─── CRISIS KEYWORD DETECTION ───
+const CRISIS_KEYWORDS = ['suicide', 'kill myself', 'want to die', 'end it', 'overdose', 'od', 'harm myself', 'self harm', 'not worth living']
+
+function isCrisisMessage(text) {
+  const lower = text.toLowerCase()
+  return CRISIS_KEYWORDS.some(kw => lower.includes(kw))
+}
+
+const SYSTEM_PROMPT = `You are the Sober Guide — a compassionate, non-judgmental AI companion built into JustStaySober. You provide emotional support, information, and encouragement to people in recovery from alcohol and substance use disorders, as well as their family members and loved ones.
+
+WHAT YOU ARE:
+- A supportive companion available 24/7
+- A source of information about recovery pathways (AA, NA, SMART Recovery, Celebrate Recovery, Refuge Recovery, DHARMA Recovery, LifeRing, Women for Sobriety, and others)
+- A gentle guide to finding meetings, resources, and professional help
+- A non-judgmental presence when someone is struggling
+
+WHAT YOU ARE NOT:
+- A licensed therapist, counselor, or medical professional
+- A replacement for a sponsor, therapist, or treatment program
+- Able to provide medical advice about withdrawal, medications, or detox
+
+CRISIS PROTOCOL — ALWAYS FOLLOW THIS:
+If anyone mentions: suicide, self-harm, wanting to die, overdose, or immediate danger — IMMEDIATELY respond with:
+"I hear you and I'm concerned about your safety. Please reach out right now:
+• 988 Suicide & Crisis Lifeline: call or text 988
+• Crisis Text Line: text HOME to 741741
+• Emergency: call 911
+You are not alone. These trained counselors are available 24/7 and want to help."
+Then continue to provide emotional support.
+
+RELAPSE PROTOCOL:
+If someone mentions relapsing or having used — respond with compassion, never shame. Relapse is part of many people's recovery journey. Encourage them to reach out to their sponsor, counselor, or a meeting. Remind them that one slip doesn't erase their progress.
+
+LANGUAGE GUIDELINES:
+- Use person-first language ("person with a substance use disorder" not "addict" unless they use that word themselves)
+- Never shame, minimize, or lecture
+- Validate feelings before offering information or suggestions
+- Use "recovery" broadly — honor all pathways
+- Avoid clinical jargon unless explaining a term
+
+BOUNDARIES:
+- Always recommend professional help for medical questions about withdrawal, medications (Suboxone, Vivitrol, Naltrexone, etc.)
+- For legal questions, refer to an attorney
+- For mental health diagnoses, refer to a licensed professional
+- End responses with a gentle reminder that human support (sponsor, counselor, meeting) is always available
+
+TONE: Warm, calm, hopeful, real. Not corporate. Not preachy. Like a friend in recovery who's been around a while and genuinely cares.`
 
 const STUB_RESPONSES = [
   "I hear you. That sounds really hard. You don't have to be alone with this. Can you tell me more about what's going on?",
@@ -57,11 +103,14 @@ async function callAnthropic(messages) {
   return data.content?.[0]?.text || "I'm here with you."
 }
 
+const CRISIS_BANNER_TEXT = `I hear you and I'm concerned about your safety. Please reach out right now:\n• 988 Suicide & Crisis Lifeline: call or text 988\n• Crisis Text Line: text HOME to 741741\n• Emergency: call 911\nYou are not alone. These trained counselors are available 24/7 and want to help.`
+
 export default function SoberGuide() {
   const [messages, setMessages] = useState([OPENER])
   const [input, setInput] = useState('')
   const [typing, setTyping] = useState(false)
   const [apiEnabled, setApiEnabled] = useState(true) // Always enabled — key lives in Cloudflare Worker proxy
+  const [showCrisisBanner, setShowCrisisBanner] = useState(false)
   const bottomRef = useRef(null)
   const inputRef = useRef(null)
   const responseIndex = useRef(0)
@@ -74,6 +123,11 @@ export default function SoberGuide() {
     const text = input.trim()
     if (!text || typing) return
     setInput('')
+
+    // ─── CRISIS CHECK — runs before API call ───
+    if (isCrisisMessage(text)) {
+      setShowCrisisBanner(true)
+    }
 
     const userMsg = { id: Date.now(), role: 'user', text, ts: new Date() }
     const nextMessages = [...messages, userMsg]
@@ -169,6 +223,38 @@ export default function SoberGuide() {
         <a href="tel:988" style={{ color: 'rgba(255,150,79,0.9)', fontWeight: 700, textDecoration: 'none' }}>988</a>
         {' '}anytime.
       </div>
+
+      {/* Crisis Banner — shown when crisis keywords detected */}
+      {showCrisisBanner && (
+        <div style={{
+          padding: '0.85rem 1.25rem',
+          background: 'rgba(255,59,48,0.12)',
+          borderBottom: '1px solid rgba(255,59,48,0.3)',
+          flexShrink: 0,
+          position: 'relative',
+        }}>
+          <div style={{ fontWeight: 700, fontSize: '0.8rem', color: 'rgba(255,80,70,1)', marginBottom: '0.4rem' }}>
+            🚨 If you're in crisis right now:
+          </div>
+          <div style={{ fontSize: '0.78rem', color: 'var(--text)', lineHeight: 1.6 }}>
+            <div>• <strong>988 Suicide &amp; Crisis Lifeline:</strong> <a href="tel:988" style={{ color: 'rgba(255,80,70,0.9)', fontWeight: 700, textDecoration: 'none' }}>call or text 988</a></div>
+            <div>• <strong>Crisis Text Line:</strong> text HOME to <strong>741741</strong></div>
+            <div>• <strong>Emergency:</strong> <a href="tel:911" style={{ color: 'rgba(255,80,70,0.9)', fontWeight: 700, textDecoration: 'none' }}>call 911</a></div>
+          </div>
+          <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', marginTop: '0.35rem' }}>
+            You are not alone. Trained counselors are available 24/7.
+          </div>
+          <button
+            onClick={() => setShowCrisisBanner(false)}
+            style={{
+              position: 'absolute', top: '0.6rem', right: '0.85rem',
+              background: 'none', border: 'none', color: 'var(--text-muted)',
+              fontSize: '1rem', cursor: 'pointer', lineHeight: 1,
+            }}
+            aria-label="Dismiss crisis banner"
+          >×</button>
+        </div>
+      )}
 
       {/* Messages */}
       <div style={{ flex: 1, overflowY: 'auto', padding: '1rem 1.25rem' }}>
