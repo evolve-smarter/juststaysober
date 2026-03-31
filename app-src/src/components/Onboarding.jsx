@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { registerWithGHL } from '../utils/ghl'
 
 const SLIDES = [
   {
@@ -47,6 +48,7 @@ const SLIDES = [
 export default function Onboarding({ onComplete }) {
   const [slide, setSlide] = useState(0)
   const [soberDate, setSoberDate] = useState('')
+  const [email, setEmail] = useState('')
   const [showDateStep, setShowDateStep] = useState(false)
 
   const current = SLIDES[slide]
@@ -65,6 +67,12 @@ export default function Onboarding({ onComplete }) {
       localStorage.setItem('jss_sober_date', soberDate)
     }
     localStorage.setItem('jss_onboarded', '1')
+
+    // Fire-and-forget GHL registration — silent fail, never blocks the user
+    if (email) {
+      registerWithGHL(email, soberDate || null)
+    }
+
     onComplete()
   }
 
@@ -96,6 +104,22 @@ export default function Onboarding({ onComplete }) {
         </p>
 
         <input
+          type="email"
+          value={email}
+          onChange={e => setEmail(e.target.value)}
+          placeholder="your@email.com"
+          autoComplete="email"
+          style={{
+            width: '100%', maxWidth: '320px',
+            background: 'var(--bg-2)', border: '1px solid var(--border)',
+            color: email ? 'var(--text)' : 'var(--text-dim)',
+            padding: '0.9rem 1rem', borderRadius: '14px',
+            fontSize: '1rem', marginBottom: '0.75rem', outline: 'none',
+            textAlign: 'center',
+          }}
+        />
+
+        <input
           type="date"
           value={soberDate}
           onChange={e => setSoberDate(e.target.value)}
@@ -120,10 +144,16 @@ export default function Onboarding({ onComplete }) {
             marginBottom: '0.75rem',
           }}
         >
-          {soberDate ? "Let's go" : "Skip for now"}
+          {(soberDate || email) ? "Let's go" : "Skip for now"}
         </button>
 
-        {soberDate && (
+        {email && (
+          <p style={{ fontSize: '0.8rem', color: 'var(--text-dim)', textAlign: 'center', marginBottom: '0.5rem' }}>
+            You're in. Check your email.
+          </p>
+        )}
+
+        {(soberDate || email) && (
           <button
             onClick={finish}
             style={{ background: 'none', border: 'none', color: 'var(--text-muted)', fontSize: '0.85rem', cursor: 'pointer' }}

@@ -158,3 +158,40 @@ juststaysober/
     │       └── Milestones.jsx   ← Daily quotes (NEW)
     └── vite.config.js
 ```
+
+---
+
+## Session 4 Progress (2026-03-31) — Nexus
+
+### What Was Built
+
+#### 1. GHL Backend Integration (`app-src/src/utils/ghl.js`)
+- Created `src/utils/ghl.js` with `registerWithGHL(email, sobrietyDate)` utility
+- POSTs to `https://services.leadconnectorhq.com/contacts/` with Bearer token
+- Payload: locationId, email, tags `['jss-user']`, custom fields `contact.sobriety_date` + `contact.jss_user: 'Yes'`, source `JustStaySober App`
+- **Silent fail** — `try/catch` with `console.error` only; never blocks user flow
+- Uses GHL API version header `2021-07-28`
+
+#### 2. Onboarding Email Capture (`Onboarding.jsx`)
+- Added email input field to the final onboarding step (before sobriety date)
+- On `finish()`: calls `registerWithGHL(email, sobrietyDate)` as a fire-and-forget (non-blocking)
+- Shows "You're in. Check your email." confirmation below the submit button when email is entered
+- Email is optional — user can still skip without entering it
+
+#### 3. Landing Page GHL Wiring (`index.html`)
+- Both hero form and waitlist section forms now call `registerWithGHL(email)` on successful signup
+- GHL `registerWithGHL` function added to page JS (tags as `jss-waitlist`, source `JustStaySober Landing Page`)
+- Confirmation messages updated to: **"You're in. Check your email."** (sets expectation even before GHL email automation is live)
+- Dynamic copyright `© {new Date().getFullYear()}` was already in place from Session 3 ✅
+
+---
+
+## Git Log (updated)
+
+```
+[session 4 commit] feat: wire GHL backend for user signup + email capture
+a0e8eb1 feat: comprehensive safety system prompt + crisis detection + dynamic copyright
+d6d695c feat: Meeting Guide API, AI chat, onboarding, improved UI
+b53dba5 Add built PWA to /app/ + fix base paths for GitHub Pages
+249cdb5 Initial build: landing page + PWA scaffold
+```
