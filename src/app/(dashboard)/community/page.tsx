@@ -28,6 +28,13 @@ export default async function CommunityPage() {
     post.isAnon ? { ...post, user: { id: '', name: 'Anonymous', image: null } } : post
   )
 
+  const likedPostIds = session?.user?.id
+    ? (await prisma.postLike.findMany({
+        where: { userId: session.user.id, postId: { in: posts.map((p) => p.id) } },
+        select: { postId: true },
+      })).map((l) => l.postId)
+    : []
+
   return (
     <div className="p-8 max-w-3xl mx-auto">
       <h1 className="text-3xl font-bold text-white mb-2">Community</h1>
@@ -39,6 +46,7 @@ export default async function CommunityPage() {
         initialPosts={masked}
         categories={categories}
         currentUserId={session?.user?.id ?? null}
+        likedPostIds={likedPostIds}
       />
     </div>
   )

@@ -2,8 +2,29 @@ import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/db'
 import { SobrietyCounter } from '@/components/sobriety/sobriety-counter'
 import { MilestoneCard } from '@/components/sobriety/milestone-card'
+import { MilestoneChecker } from '@/components/sobriety/milestone-checker'
 import { SetSobrietyDate } from '@/components/sobriety/set-sobriety-date'
 import { getEarnedMilestoneDays, getNextMilestone, getDaysUntilNextMilestone } from '@/lib/sobriety'
+
+function calculateStreak(checkIns: { createdAt: Date }[]): number {
+  if (checkIns.length === 0) return 0
+  const today = new Date()
+  today.setHours(0, 0, 0, 0)
+  const checkInDays = new Set(
+    checkIns.map((c) => {
+      const d = new Date(c.createdAt)
+      d.setHours(0, 0, 0, 0)
+      return d.getTime()
+    })
+  )
+  let streak = 0
+  const cursor = new Date(today)
+  while (checkInDays.has(cursor.getTime())) {
+    streak++
+    cursor.setDate(cursor.getDate() - 1)
+  }
+  return streak
+}
 
 export const metadata = { title: 'Dashboard' }
 
@@ -16,9 +37,11 @@ export default async function DashboardPage() {
     prisma.checkIn.findMany({
       where: { userId },
       orderBy: { createdAt: 'desc' },
-      take: 7,
+      take: 60,
     }),
   ])
+
+  const checkinStreak = calculateStreak(recentCheckins)
 
   const milestones = sobrietyRecord
     ? await prisma.milestone.findMany({
@@ -55,6 +78,8 @@ export default async function DashboardPage() {
 
   return (
     <div className="p-8 max-w-5xl mx-auto">
+      <MilestoneChecker />
+
       {/* Header */}
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-white">
@@ -67,12 +92,12 @@ export default async function DashboardPage() {
       <SobrietyCounter soberDate={sobrietyRecord.soberDate} />
 
       {/* Stats row */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
         <div className="bg-gray-900/60 border border-white/10 rounded-xl p-5">
           <p className="text-gray-400 text-sm">Sobriety Date</p>
-          <p className="text-white font-semibold mt-1">
+          <p className="text-white font-semibold mt-1 text-sm">
             {sobrietyRecord.soberDate.toLocaleDateString('en-US', {
-              month: 'long',
+              month: 'short',
               day: 'numeric',
               year: 'numeric',
             })}
@@ -83,6 +108,13 @@ export default async function DashboardPage() {
           <p className="text-gray-400 text-sm">Milestones Earned</p>
           <p className="text-white font-semibold mt-1">
             {milestones.length} badge{milestones.length !== 1 ? 's' : ''}
+          </p>
+        </div>
+
+        <div className={`rounded-xl p-5 ${checkinStreak > 0 ? 'bg-green-500/10 border border-green-500/20' : 'bg-gray-900/60 border border-white/10'}`}>
+          <p className={`text-sm ${checkinStreak > 0 ? 'text-green-300' : 'text-gray-400'}`}>Check-in Streak</p>
+          <p className="text-white font-semibold mt-1">
+            {checkinStreak > 0 ? `🔥 ${checkinStreak} day${checkinStreak !== 1 ? 's' : ''}` : 'Check in today'}
           </p>
         </div>
 

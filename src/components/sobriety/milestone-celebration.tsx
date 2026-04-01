@@ -10,14 +10,25 @@ interface Milestone {
   days: number
 }
 
-export function MilestoneCelebration({ milestone }: { milestone: Milestone }) {
+export function MilestoneCelebration({
+  milestone,
+  onClose,
+}: {
+  milestone: Milestone
+  onClose?: () => void
+}) {
   const [show, setShow] = useState(true)
   const router = useRouter()
 
+  function close() {
+    setShow(false)
+    onClose?.()
+  }
+
   useEffect(() => {
-    // Auto-dismiss after 10 seconds
-    const timer = setTimeout(() => setShow(false), 10000)
+    const timer = setTimeout(() => close(), 10000)
     return () => clearTimeout(timer)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   if (!show) return null
@@ -55,7 +66,7 @@ export function MilestoneCelebration({ milestone }: { milestone: Milestone }) {
           <button
             onClick={() => {
               router.push('/community')
-              setShow(false)
+              close()
             }}
             className="w-full bg-purple-600 hover:bg-purple-500 text-white px-6 py-3 rounded-xl font-medium transition-colors"
           >
@@ -70,7 +81,7 @@ export function MilestoneCelebration({ milestone }: { milestone: Milestone }) {
             Celebrate with a gift 🎁
           </a>
           <button
-            onClick={() => setShow(false)}
+            onClick={close}
             className="text-gray-500 hover:text-gray-300 text-sm transition-colors"
           >
             Maybe later

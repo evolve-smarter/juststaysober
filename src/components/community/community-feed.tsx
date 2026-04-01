@@ -24,12 +24,15 @@ export function CommunityFeed({
   initialPosts,
   categories,
   currentUserId,
+  likedPostIds = [],
 }: {
   initialPosts: Post[]
   categories: Category[]
   currentUserId: string | null
+  likedPostIds?: string[]
 }) {
   const [posts, setPosts] = useState(initialPosts)
+  const [likedSet, setLikedSet] = useState<Set<string>>(() => new Set(likedPostIds))
   const [activeCategory, setActiveCategory] = useState('general')
   const [newPost, setNewPost] = useState('')
   const [isAnon, setIsAnon] = useState(false)
@@ -39,6 +42,41 @@ export function CommunityFeed({
   const filtered = activeCategory === 'general'
     ? posts
     : posts.filter((p) => p.category === activeCategory)
+
+  async function handleLike(postId: string) {
+    if (!currentUserId) return
+    const wasLiked = likedSet.has(postId)
+    // Optimistic update
+    setLikedSet((prev) => {
+      const next = new Set(prev)
+      wasLiked ? next.delete(postId) : next.add(postId)
+      return next
+    })
+    setPosts((prev) =>
+      prev.map((p) =>
+        p.id === postId
+          ? { ...p, _count: { ...p._count, likes: p._count.likes + (wasLiked ? -1 : 1) } }
+          : p
+      )
+    )
+    try {
+      await fetch(`/api/posts/${postId}/like`, { method: 'POST' })
+    } catch {
+      // Revert on error
+      setLikedSet((prev) => {
+        const next = new Set(prev)
+        wasLiked ? next.add(postId) : next.delete(postId)
+        return next
+      })
+      setPosts((prev) =>
+        prev.map((p) =>
+          p.id === postId
+            ? { ...p, _count: { ...p._count, likes: p._count.likes + (wasLiked ? 1 : -1) } }
+            : p
+        )
+      )
+    }
+  }
 
   async function handlePost(e: React.FormEvent) {
     e.preventDefault()
@@ -176,8 +214,14 @@ export function CommunityFeed({
             <p className="text-gray-200 leading-relaxed whitespace-pre-wrap">{post.content}</p>
 
             <div className="flex items-center gap-4 mt-4 text-gray-500 text-sm">
-              <button className="flex items-center gap-1.5 hover:text-purple-400 transition-colors">
-                ❤️ {post._count.likes}
+              <button
+                onClick={() => handleLike(post.id)}
+                disabled={!currentUserId}
+                className={`flex items-center gap-1.5 transition-colors disabled:opacity-40 ${
+                  likedSet.has(post.id) ? 'text-pink-400' : 'hover:text-pink-400'
+                }`}
+              >
+                {likedSet.has(post.id) ? '❤️' : '🤍'} {post._count.likes}
               </button>
               <button className="flex items-center gap-1.5 hover:text-blue-400 transition-colors">
                 💬 {post._count.comments}
