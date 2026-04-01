@@ -4,6 +4,14 @@ import { useState } from 'react'
 import { formatDistanceToNow } from 'date-fns'
 import Image from 'next/image'
 
+interface Comment {
+  id: string
+  content: string
+  isAnon: boolean
+  createdAt: string | Date
+  user: { id: string; name: string | null; image: string | null }
+}
+
 interface Post {
   id: string
   content: string
@@ -39,6 +47,14 @@ export function CommunityFeed({
   const [postCategory, setPostCategory] = useState('general')
   const [loading, setLoading] = useState(false)
 
+  // Comment state per post
+  const [expandedComments, setExpandedComments] = useState<Set<string>>(() => new Set())
+  const [commentThreads, setCommentThreads] = useState<Record<string, Comment[]>>({})
+  const [commentLoading, setCommentLoading] = useState<Record<string, boolean>>({})
+  const [newComments, setNewComments] = useState<Record<string, string>>({})
+  const [commentAnon, setCommentAnon] = useState<Record<string, boolean>>({})
+  const [commentSubmitting, setCommentSubmitting] = useState<Record<string, boolean>>({})
+
   const filtered = activeCategory === 'general'
     ? posts
     : posts.filter((p) => p.category === activeCategory)
@@ -46,7 +62,6 @@ export function CommunityFeed({
   async function handleLike(postId: string) {
     if (!currentUserId) return
     const wasLiked = likedSet.has(postId)
-    // Optimistic update
     setLikedSet((prev) => {
       const next = new Set(prev)
       wasLiked ? next.delete(postId) : next.add(postId)
@@ -62,7 +77,6 @@ export function CommunityFeed({
     try {
       await fetch(`/api/posts/${postId}/like`, { method: 'POST' })
     } catch {
-      // Revert on error
       setLikedSet((prev) => {
         const next = new Set(prev)
         wasLiked ? next.add(postId) : next.delete(postId)
@@ -75,6 +89,63 @@ export function CommunityFeed({
             : p
         )
       )
+    }
+  }
+
+  async function toggleComments(postId: string) {
+    const isOpen = expandedComments.has(postId)
+    if (isOpen) {
+      setExpandedComments((prev) => {
+        const next = new Set(prev)
+        next.delete(postId)
+        return next
+      })
+      return
+    }
+    setExpandedComments((prev) => new Set([...prev, postId]))
+    if (commentThreads[postId]) return // already loaded
+
+    setCommentLoading((prev) => ({ ...prev, [postId]: true }))
+    try {
+      const res = await fetch(`/api/posts/${postId}/comments`)
+      if (res.ok) {
+        const data: Comment[] = await res.json()
+        setCommentThreads((prev) => ({ ...prev, [postId]: data }))
+      }
+    } finally {
+      setCommentLoading((prev) => ({ ...prev, [postId]: false }))
+    }
+  }
+
+  async function handleCommentSubmit(e: React.FormEvent, postId: string) {
+    e.preventDefault()
+    const content = newComments[postId]?.trim()
+    if (!content || !currentUserId) return
+
+    setCommentSubmitting((prev) => ({ ...prev, [postId]: true }))
+    try {
+      const res = await fetch(`/api/posts/${postId}/comments`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ content, isAnon: commentAnon[postId] ?? false }),
+      })
+      if (res.ok) {
+        const comment: Comment = await res.json()
+        setCommentThreads((prev) => ({
+          ...prev,
+          [postId]: [...(prev[postId] ?? []), comment],
+        }))
+        setNewComments((prev) => ({ ...prev, [postId]: '' }))
+        setPosts((prev) =>
+          prev.map((p) =>
+            p.id === postId
+              ? { ...p, _count: { ...p._count, comments: p._count.comments + 1 } }
+              : p
+          )
+        )
+      }
+    } finally {
+      setCommentSubmitting((prev) => ({ ...prev, [postId]: false }))
     }
   }
 
@@ -183,52 +254,142 @@ export function CommunityFeed({
           </div>
         )}
 
-        {filtered.map((post) => (
-          <div key={post.id} className="bg-gray-900/60 border border-white/10 rounded-xl p-5">
-            <div className="flex items-start gap-3 mb-3">
-              <div className="w-8 h-8 rounded-full bg-purple-600 flex items-center justify-center flex-shrink-0 overflow-hidden">
-                {post.user.image ? (
-                  <Image src={post.user.image} alt="" width={32} height={32} />
-                ) : (
-                  <span className="text-white text-sm font-medium">
-                    {post.user.name?.[0] ?? '?'}
-                  </span>
-                )}
-              </div>
-              <div className="flex-1">
-                <div className="flex items-center gap-2">
-                  <span className="text-white font-medium text-sm">
-                    {post.user.name ?? 'Anonymous'}
-                  </span>
-                  <span className="text-gray-600 text-xs">·</span>
-                  <span className="text-gray-500 text-xs">
-                    {formatDistanceToNow(new Date(post.createdAt), { addSuffix: true })}
-                  </span>
-                  <span className="text-xs bg-gray-800 text-gray-400 px-2 py-0.5 rounded-full ml-auto">
-                    {categoryEmojis[post.category]} {post.category}
-                  </span>
+        {filtered.map((post) => {
+          const isCommentsOpen = expandedComments.has(post.id)
+          const thread = commentThreads[post.id] ?? []
+          const isLoadingComments = commentLoading[post.id]
+          const isSubmittingComment = commentSubmitting[post.id]
+
+          return (
+            <div key={post.id} className="bg-gray-900/60 border border-white/10 rounded-xl p-5">
+              <div className="flex items-start gap-3 mb-3">
+                <div className="w-8 h-8 rounded-full bg-purple-600 flex items-center justify-center flex-shrink-0 overflow-hidden">
+                  {post.user.image ? (
+                    <Image src={post.user.image} alt="" width={32} height={32} />
+                  ) : (
+                    <span className="text-white text-sm font-medium">
+                      {post.user.name?.[0] ?? '?'}
+                    </span>
+                  )}
+                </div>
+                <div className="flex-1">
+                  <div className="flex items-center gap-2">
+                    <span className="text-white font-medium text-sm">
+                      {post.user.name ?? 'Anonymous'}
+                    </span>
+                    <span className="text-gray-600 text-xs">·</span>
+                    <span className="text-gray-500 text-xs">
+                      {formatDistanceToNow(new Date(post.createdAt), { addSuffix: true })}
+                    </span>
+                    <span className="text-xs bg-gray-800 text-gray-400 px-2 py-0.5 rounded-full ml-auto">
+                      {categoryEmojis[post.category]} {post.category}
+                    </span>
+                  </div>
                 </div>
               </div>
-            </div>
 
-            <p className="text-gray-200 leading-relaxed whitespace-pre-wrap">{post.content}</p>
+              <p className="text-gray-200 leading-relaxed whitespace-pre-wrap">{post.content}</p>
 
-            <div className="flex items-center gap-4 mt-4 text-gray-500 text-sm">
-              <button
-                onClick={() => handleLike(post.id)}
-                disabled={!currentUserId}
-                className={`flex items-center gap-1.5 transition-colors disabled:opacity-40 ${
-                  likedSet.has(post.id) ? 'text-pink-400' : 'hover:text-pink-400'
-                }`}
-              >
-                {likedSet.has(post.id) ? '❤️' : '🤍'} {post._count.likes}
-              </button>
-              <button className="flex items-center gap-1.5 hover:text-blue-400 transition-colors">
-                💬 {post._count.comments}
-              </button>
+              <div className="flex items-center gap-4 mt-4 text-gray-500 text-sm">
+                <button
+                  onClick={() => handleLike(post.id)}
+                  disabled={!currentUserId}
+                  className={`flex items-center gap-1.5 transition-colors disabled:opacity-40 ${
+                    likedSet.has(post.id) ? 'text-pink-400' : 'hover:text-pink-400'
+                  }`}
+                >
+                  {likedSet.has(post.id) ? '❤️' : '🤍'} {post._count.likes}
+                </button>
+                <button
+                  onClick={() => toggleComments(post.id)}
+                  className={`flex items-center gap-1.5 transition-colors ${
+                    isCommentsOpen ? 'text-blue-400' : 'hover:text-blue-400'
+                  }`}
+                >
+                  💬 {post._count.comments}
+                </button>
+              </div>
+
+              {/* Inline comment thread */}
+              {isCommentsOpen && (
+                <div className="mt-4 pt-4 border-t border-white/5">
+                  {isLoadingComments ? (
+                    <p className="text-gray-500 text-sm text-center py-3">Loading comments…</p>
+                  ) : (
+                    <>
+                      {thread.length === 0 && (
+                        <p className="text-gray-600 text-sm mb-3">No comments yet. Be the first.</p>
+                      )}
+                      <div className="space-y-3 mb-4">
+                        {thread.map((comment) => (
+                          <div key={comment.id} className="flex items-start gap-2">
+                            <div className="w-6 h-6 rounded-full bg-purple-800 flex items-center justify-center flex-shrink-0 overflow-hidden">
+                              {comment.user.image ? (
+                                <Image src={comment.user.image} alt="" width={24} height={24} />
+                              ) : (
+                                <span className="text-white text-xs">
+                                  {comment.user.name?.[0] ?? '?'}
+                                </span>
+                              )}
+                            </div>
+                            <div className="flex-1 bg-gray-800/60 rounded-lg px-3 py-2">
+                              <div className="flex items-center gap-2 mb-1">
+                                <span className="text-gray-300 text-xs font-medium">
+                                  {comment.user.name ?? 'Anonymous'}
+                                </span>
+                                <span className="text-gray-600 text-xs">
+                                  {formatDistanceToNow(new Date(comment.createdAt), { addSuffix: true })}
+                                </span>
+                              </div>
+                              <p className="text-gray-300 text-sm leading-relaxed">{comment.content}</p>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+
+                      {currentUserId && (
+                        <form
+                          onSubmit={(e) => handleCommentSubmit(e, post.id)}
+                          className="flex items-start gap-2"
+                        >
+                          <div className="flex-1">
+                            <input
+                              type="text"
+                              placeholder="Write a comment…"
+                              value={newComments[post.id] ?? ''}
+                              onChange={(e) =>
+                                setNewComments((prev) => ({ ...prev, [post.id]: e.target.value }))
+                              }
+                              className="w-full bg-gray-800 border border-white/10 rounded-lg px-3 py-2 text-white placeholder-gray-600 text-sm focus:outline-none focus:border-purple-500 transition-colors"
+                            />
+                            <label className="flex items-center gap-1.5 mt-1.5 text-gray-600 text-xs cursor-pointer">
+                              <input
+                                type="checkbox"
+                                checked={commentAnon[post.id] ?? false}
+                                onChange={(e) =>
+                                  setCommentAnon((prev) => ({ ...prev, [post.id]: e.target.checked }))
+                                }
+                                className="rounded"
+                              />
+                              Anonymous
+                            </label>
+                          </div>
+                          <button
+                            type="submit"
+                            disabled={isSubmittingComment || !(newComments[post.id]?.trim())}
+                            className="bg-purple-600 hover:bg-purple-500 disabled:opacity-40 text-white px-3 py-2 rounded-lg text-sm font-medium transition-colors mt-0.5"
+                          >
+                            {isSubmittingComment ? '…' : 'Reply'}
+                          </button>
+                        </form>
+                      )}
+                    </>
+                  )}
+                </div>
+              )}
             </div>
-          </div>
-        ))}
+          )
+        })}
       </div>
     </div>
   )
