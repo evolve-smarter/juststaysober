@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { MilestoneCelebration } from './milestone-celebration'
+import { usePushSubscription } from '@/lib/use-push-subscription'
 
 interface MilestoneInfo {
   emoji: string
@@ -13,6 +14,8 @@ interface MilestoneInfo {
 export function MilestoneChecker() {
   const [queue, setQueue] = useState<MilestoneInfo[]>([])
   const [checked, setChecked] = useState(false)
+
+  usePushSubscription()
 
   useEffect(() => {
     fetch('/api/milestones', { method: 'POST' })

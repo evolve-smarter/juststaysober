@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/db'
+import { sendPushToUser } from '@/lib/push'
 
 export async function GET() {
   const session = await auth()
@@ -65,6 +66,16 @@ export async function POST() {
     where: { userId, celebrated: false },
     include: { milestone: true },
   })
+
+  // Send Web Push for truly new milestones
+  if (awarded.length > 0 && newOnes.length > 0) {
+    const first = newOnes[0]
+    sendPushToUser(userId, {
+      title: `${first.milestone.emoji} ${first.milestone.label}!`,
+      body: `You've reached ${first.milestone.days} days sober. Keep going — you're incredible!`,
+      url: '/milestones',
+    }).catch(() => {})
+  }
 
   return NextResponse.json({ awarded, uncelebrated: newOnes })
 }

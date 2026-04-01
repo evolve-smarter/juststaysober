@@ -28,7 +28,8 @@ model User {
   comments       Comment[]
   likes          PostLike[]
   milestones     UserMilestone[]
-  checkIns       CheckIn[]
+  checkIns           CheckIn[]
+  pushSubscriptions  PushSubscription[]
 }
 
 model Account {
@@ -179,4 +180,15 @@ model Resource {
   isVerified  Boolean  @default(false)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+}
+
+model PushSubscription {
+  id        String   @id @default(cuid())
+  userId    String
+  endpoint  String   @unique
+  p256dh    String
+  auth      String
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
