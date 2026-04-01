@@ -1,0 +1,182 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String    @unique
+  emailVerified DateTime?
+  image         String?
+  bio           String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  accounts      Account[]
+  sessions      Session[]
+  sobrietyRecord SobrietyRecord?
+  journalEntries JournalEntry[]
+  posts          Post[]
+  comments       Comment[]
+  likes          PostLike[]
+  milestones     UserMilestone[]
+  checkIns       CheckIn[]
+}
+
+model Account {
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([provider, providerAccountId])
+}
+
+model Session {
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model VerificationToken {
+  identifier String
+  token      String
+  expires    DateTime
+
+  @@id([identifier, token])
+}
+
+model SobrietyRecord {
+  id           String   @id @default(cuid())
+  userId       String   @unique
+  soberDate    DateTime
+  substance    String   @default("alcohol")
+  isPublic     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Milestone {
+  id          String          @id @default(cuid())
+  days        Int             @unique
+  label       String
+  emoji       String
+  description String
+  badgeColor  String          @default("#6366f1")
+  userMilestones UserMilestone[]
+}
+
+model UserMilestone {
+  id          String   @id @default(cuid())
+  userId      String
+  milestoneId String
+  achievedAt  DateTime @default(now())
+  celebrated  Boolean  @default(false)
+
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  milestone Milestone @relation(fields: [milestoneId], references: [id])
+
+  @@unique([userId, milestoneId])
+}
+
+model JournalEntry {
+  id        String   @id @default(cuid())
+  userId    String
+  content   String
+  mood      String?  // grateful, hopeful, struggling, strong, peaceful
+  isPrivate Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model CheckIn {
+  id        String   @id @default(cuid())
+  userId    String
+  mood      Int      // 1-5 scale
+  note      String?
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, createdAt]) // one per day enforced in app logic
+}
+
+model Post {
+  id        String     @id @default(cuid())
+  userId    String
+  content   String
+  category  String     @default("general") // general, milestone, struggle, gratitude, resource
+  isAnon    Boolean    @default(false)
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+
+  user     User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  comments Comment[]
+  likes    PostLike[]
+}
+
+model Comment {
+  id        String   @id @default(cuid())
+  postId    String
+  userId    String
+  content   String
+  isAnon    Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model PostLike {
+  id        String   @id @default(cuid())
+  postId    String
+  userId    String
+  createdAt DateTime @default(now())
+
+  post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([postId, userId])
+}
+
+model Resource {
+  id          String   @id @default(cuid())
+  name        String
+  type        String   // treatment_center, hotline, meeting, app, book, podcast
+  description String
+  url         String?
+  phone       String?
+  address     String?
+  city        String?
+  state       String?
+  isVerified  Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
