@@ -3,11 +3,12 @@ import { SignInForm } from '@/components/auth/sign-in-form'
 
 export const metadata = { title: 'Sign In' }
 
-export default function LoginPage({
-  searchParams,
+export default async function LoginPage({
+  searchParams: searchParamsPromise,
 }: {
-  searchParams: { verify?: string; error?: string }
+  searchParams: Promise<{ verify?: string; error?: string }>
 }) {
+  const searchParams = await searchParamsPromise
   if (searchParams.verify) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-950 px-4">
