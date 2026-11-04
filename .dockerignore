@@ -1,0 +1,15 @@
+node_modules
+.next
+.git
+.env
+.env.*
+!.env.example
+legacy-pwa-dist
+app-src
+proxy
+scripts
+HANDOFF.md
+BUILD-LOG.md
+DEPLOY-PROXY.md
+index.html
+*.log

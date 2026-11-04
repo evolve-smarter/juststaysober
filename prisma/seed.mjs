@@ -67,16 +67,11 @@ async function main() {
       url: 'https://www.crisistextline.org',
       isVerified: true,
     },
-    {
-      name: 'Summit Malibu',
-      type: 'treatment_center',
-      description: 'Luxury addiction treatment center in Malibu, CA specializing in evidence-based recovery programs.',
-      url: 'https://www.summitmalibu.com',
-      city: 'Malibu',
-      state: 'CA',
-      isVerified: true,
-    },
   ]
+
+  // A specific treatment facility was seeded earlier. The free app does not give any facility
+  // visibility (owner decision), so remove it from databases that already have it.
+  await prisma.resource.deleteMany({ where: { id: 'summit-malibu' } })
 
   for (const resource of resources) {
     await prisma.resource.upsert({

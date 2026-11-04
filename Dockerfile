@@ -41,6 +41,14 @@ COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 COPY --from=prisma /app/node_modules/.prisma ./node_modules/.prisma
 COPY --from=deps /app/node_modules/@prisma ./node_modules/@prisma
 
+# Release tooling. The standalone output has no Prisma CLI, schema or migrations, so the
+# pre-deploy step (deploy/predeploy.sh) needs them. The CLI lives in its own folder so it
+# cannot disturb the app's traced node_modules. Keep PRISMA_VERSION equal to package.json.
+ARG PRISMA_VERSION=6.19.2
+RUN mkdir /migrate && cd /migrate && npm init -y >/dev/null 2>&1 && npm install --no-audit --no-fund prisma@${PRISMA_VERSION} && chown -R nextjs:nodejs /migrate
+COPY --chown=nextjs:nodejs prisma ./prisma
+COPY --chown=nextjs:nodejs deploy ./deploy
+
 USER nextjs
 
 EXPOSE 3000
