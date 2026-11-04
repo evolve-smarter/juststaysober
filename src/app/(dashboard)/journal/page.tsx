@@ -24,7 +24,7 @@ export default async function JournalPage() {
   })
 
   return (
-    <div className="p-8 max-w-3xl mx-auto">
+    <div className="p-4 md:p-8 max-w-3xl mx-auto">
       <h1 className="text-3xl font-bold text-white mb-2">Journal</h1>
       <p className="text-gray-400 mb-8">
         Private reflections on your journey. Only you can see these.

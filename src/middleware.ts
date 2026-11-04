@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
-const protectedPaths = ['/dashboard', '/milestones', '/journal', '/companion', '/community', '/resources', '/profile']
+const protectedPaths = ['/dashboard', '/milestones', '/journal', '/companion', '/community', '/resources', '/profile', '/admin']
 
 // Middleware runs on the Edge runtime, which cannot use the Prisma adapter that backs
 // database sessions. It only checks that a session cookie exists; the real session

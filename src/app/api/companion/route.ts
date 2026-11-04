@@ -3,6 +3,7 @@ import { z } from 'zod'
 import { auth } from '@/lib/auth'
 import { askCompanion } from '@/lib/companion'
 import { CRISIS_RESOURCES_TEXT, isCrisisMessage } from '@/lib/crisis'
+import { rateLimited } from '@/lib/rate-limit'
 
 const bodySchema = z.object({
   messages: z
@@ -15,24 +16,6 @@ const bodySchema = z.object({
     .min(1)
     .max(20),
 })
-
-// Simple per-instance rate limit (30 messages / hour / user). Replace with a shared store
-// (e.g. the database) if the app runs on more than one instance.
-const WINDOW_MS = 60 * 60 * 1000
-const MAX_PER_WINDOW = 30
-const hits = new Map<string, number[]>()
-
-function rateLimited(userId: string): boolean {
-  const now = Date.now()
-  const recent = (hits.get(userId) ?? []).filter((t) => now - t < WINDOW_MS)
-  if (recent.length >= MAX_PER_WINDOW) {
-    hits.set(userId, recent)
-    return true
-  }
-  recent.push(now)
-  hits.set(userId, recent)
-  return false
-}
 
 export async function POST(req: Request) {
   const session = await auth()
@@ -48,7 +31,7 @@ export async function POST(req: Request) {
 
   const crisis = isCrisisMessage(last.content)
 
-  if (rateLimited(userId)) {
+  if (rateLimited(`companion:${userId}`, 30, 60 * 60 * 1000)) {
     // Never rate-limit away crisis resources.
     return NextResponse.json(
       {

@@ -23,7 +23,7 @@ export default async function MilestonesPage() {
     : 0
 
   return (
-    <div className="p-8 max-w-4xl mx-auto">
+    <div className="p-4 md:p-8 max-w-4xl mx-auto">
       <h1 className="text-3xl font-bold text-white mb-2">Milestones</h1>
       <p className="text-gray-400 mb-8">
         {earnedIds.size} of {allMilestones.length} milestones earned

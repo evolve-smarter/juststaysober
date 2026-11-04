@@ -4,7 +4,7 @@ export const metadata = { title: 'Sober Guide' }
 
 export default function CompanionPage() {
   return (
-    <div className="p-8 max-w-3xl mx-auto">
+    <div className="p-4 md:p-8 max-w-3xl mx-auto">
       <h1 className="text-3xl font-bold text-white mb-2">Sober Guide</h1>
       <p className="text-gray-400 mb-2">
         An AI companion for support and information, available any time.

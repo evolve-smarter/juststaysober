@@ -1,62 +1,43 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/db'
 import { z } from 'zod'
+import { currentMember, listFeed, postInclude, toPublicPost } from '@/lib/community'
+import { rateLimited } from '@/lib/rate-limit'
 
 const createSchema = z.object({
-  content: z.string().min(1).max(1000),
+  content: z.string().trim().min(1).max(1000),
   category: z.enum(['general', 'milestone', 'struggle', 'gratitude', 'resource']).default('general'),
   isAnon: z.boolean().default(false),
 })
 
 export async function GET(req: NextRequest) {
+  const member = await currentMember()
+  if (!member) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+
   const { searchParams } = new URL(req.url)
-  const page = parseInt(searchParams.get('page') ?? '1')
-  const limit = 20
+  const page = Math.max(parseInt(searchParams.get('page') ?? '1') || 1, 1)
   const category = searchParams.get('category') ?? undefined
 
-  const [posts, total] = await Promise.all([
-    prisma.post.findMany({
-      where: category ? { category } : undefined,
-      include: {
-        user: { select: { id: true, name: true, image: true } },
-        _count: { select: { comments: true, likes: true } },
-      },
-      orderBy: { createdAt: 'desc' },
-      take: limit,
-      skip: (page - 1) * limit,
-    }),
-    prisma.post.count({ where: category ? { category } : undefined }),
-  ])
-
-  // Mask anon posts
-  const masked = posts.map((post) =>
-    post.isAnon ? { ...post, user: { id: '', name: 'Anonymous', image: null } } : post
-  )
-
-  return NextResponse.json({ posts: masked, total, page, pages: Math.ceil(total / limit) })
+  return NextResponse.json(await listFeed({ viewerId: member.id, category, page }))
 }
 
 export async function POST(req: NextRequest) {
-  const session = await auth()
-  if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  const member = await currentMember()
+  if (!member) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  if (member.suspended) {
+    return NextResponse.json({ error: 'Your posting access is suspended.' }, { status: 403 })
+  }
+  if (rateLimited(`post:${member.id}`, 10, 60 * 60 * 1000)) {
+    return NextResponse.json({ error: 'Too many posts. Please try again later.' }, { status: 429 })
+  }
 
-  const body = await req.json()
-  const parsed = createSchema.safeParse(body)
-  if (!parsed.success) return NextResponse.json({ error: parsed.error }, { status: 400 })
+  const parsed = createSchema.safeParse(await req.json().catch(() => null))
+  if (!parsed.success) return NextResponse.json({ error: 'Invalid request' }, { status: 400 })
 
   const post = await prisma.post.create({
-    data: {
-      userId: session.user!.id!,
-      content: parsed.data.content,
-      category: parsed.data.category,
-      isAnon: parsed.data.isAnon,
-    },
-    include: {
-      user: { select: { id: true, name: true, image: true } },
-      _count: { select: { comments: true, likes: true } },
-    },
+    data: { userId: member.id, ...parsed.data },
+    include: postInclude,
   })
 
-  return NextResponse.json(post, { status: 201 })
+  return NextResponse.json(toPublicPost(post, member.id), { status: 201 })
 }

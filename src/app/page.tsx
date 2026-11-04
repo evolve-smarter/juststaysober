@@ -188,11 +188,14 @@ export default function LandingPage() {
       {/* Footer */}
       <footer className="border-t border-white/10 px-6 py-8 text-center text-gray-500 text-sm">
         <p>
-          If you&apos;re in crisis, call{' '}
-          <a href="tel:18006624357" className="text-purple-400 hover:underline">
-            SAMHSA: 1-800-662-4357
-          </a>{' '}
-          or text HOME to 741741.
+          If you&apos;re in crisis, call or text{' '}
+          <a href="tel:988" className="text-purple-400 hover:underline">988</a>, call SAMHSA at{' '}
+          <a href="tel:18006624357" className="text-purple-400 hover:underline">1-800-662-4357</a>, or text HOME to 741741.
+        </p>
+        <p className="mt-2 space-x-4">
+          <Link href="/privacy" className="hover:underline">Privacy</Link>
+          <Link href="/terms" className="hover:underline">Terms</Link>
+          <Link href="/guidelines" className="hover:underline">Community Guidelines</Link>
         </p>
         <p className="mt-2">© 2026 JustStaySober. Made with 💜 for the recovery community.</p>
       </footer>

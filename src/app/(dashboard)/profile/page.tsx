@@ -1,6 +1,7 @@
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/db'
 import { ProfileForm } from '@/components/profile/profile-form'
+import { DeleteAccount } from '@/components/profile/delete-account'
 import { getSobrietyStats, formatSobrietyMessage } from '@/lib/sobriety'
 
 export const metadata = { title: 'Profile' }
@@ -19,7 +20,7 @@ export default async function ProfilePage() {
   const stats = sobrietyRecord ? getSobrietyStats(sobrietyRecord.soberDate) : null
 
   return (
-    <div className="p-8 max-w-3xl mx-auto">
+    <div className="p-4 md:p-8 max-w-3xl mx-auto">
       <h1 className="text-3xl font-bold text-white mb-8">Profile</h1>
 
       {/* Stats banner */}
@@ -58,6 +59,8 @@ export default async function ProfilePage() {
           isPublic: sobrietyRecord.isPublic,
         } : null}
       />
+
+      <DeleteAccount />
     </div>
   )
 }

@@ -77,7 +77,7 @@ export default async function DashboardPage() {
   const daysUntilNext = getDaysUntilNextMilestone(totalDays)
 
   return (
-    <div className="p-8 max-w-5xl mx-auto">
+    <div className="p-4 md:p-8 max-w-5xl mx-auto">
       <MilestoneChecker />
 
       {/* Header */}

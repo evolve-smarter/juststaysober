@@ -1,5 +1,6 @@
 'use client'
 
+import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import Image from 'next/image'
@@ -22,25 +23,21 @@ interface User {
   image?: string | null
 }
 
-export function Sidebar({ user }: { user: User }) {
+function SidebarBody({ user, isAdmin, onNavigate }: { user: User; isAdmin: boolean; onNavigate?: () => void }) {
   const pathname = usePathname()
+  const items = isAdmin ? [...navItems, { href: '/admin/reports', icon: '🛡️', label: 'Moderation' }] : navItems
 
   return (
-    <aside className="w-64 flex flex-col border-r border-white/10 bg-gray-950/80 backdrop-blur-sm">
-      {/* Logo */}
-      <div className="flex items-center gap-2 px-6 py-5 border-b border-white/10">
-        <span className="text-xl">🕊️</span>
-        <span className="font-bold text-white">JustStaySober</span>
-      </div>
-
+    <>
       {/* Nav */}
-      <nav className="flex-1 px-3 py-4 space-y-1">
-        {navItems.map((item) => {
+      <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
+        {items.map((item) => {
           const isActive = pathname === item.href
           return (
             <Link
               key={item.href}
               href={item.href}
+              onClick={onNavigate}
               className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
                 isActive
                   ? 'bg-purple-500/20 text-purple-300'
@@ -99,6 +96,78 @@ export function Sidebar({ user }: { user: User }) {
           </button>
         </div>
       </div>
-    </aside>
+    </>
+  )
+}
+
+function Logo() {
+  return (
+    <div className="flex items-center gap-2">
+      <span className="text-xl">🕊️</span>
+      <span className="font-bold text-white">JustStaySober</span>
+    </div>
+  )
+}
+
+export function Sidebar({ user, isAdmin = false }: { user: User; isAdmin?: boolean }) {
+  const [open, setOpen] = useState(false)
+  const pathname = usePathname()
+
+  // Close the drawer on navigation and lock page scroll while it is open.
+  useEffect(() => setOpen(false), [pathname])
+  useEffect(() => {
+    document.body.style.overflow = open ? 'hidden' : ''
+    return () => {
+      document.body.style.overflow = ''
+    }
+  }, [open])
+
+  return (
+    <>
+      {/* Desktop sidebar */}
+      <aside className="hidden md:flex w-64 flex-col border-r border-white/10 bg-gray-950/80 backdrop-blur-sm">
+        <div className="px-6 py-5 border-b border-white/10">
+          <Logo />
+        </div>
+        <SidebarBody user={user} isAdmin={isAdmin} />
+      </aside>
+
+      {/* Mobile top bar. The 988 link stays visible without opening the menu. */}
+      <header className="md:hidden flex items-center justify-between gap-3 border-b border-white/10 bg-gray-950 px-4 py-3">
+        <Logo />
+        <div className="flex items-center gap-2">
+          <a
+            href="tel:988"
+            className="rounded-full border border-red-500/40 bg-red-500/10 px-3 py-1 text-xs font-medium text-red-300"
+          >
+            Help: 988
+          </a>
+          <button
+            onClick={() => setOpen(true)}
+            aria-label="Open menu"
+            aria-expanded={open}
+            className="flex h-9 w-9 items-center justify-center rounded-lg text-xl text-gray-300 hover:bg-white/5"
+          >
+            ☰
+          </button>
+        </div>
+      </header>
+
+      {/* Mobile drawer */}
+      {open && (
+        <div className="md:hidden fixed inset-0 z-40 flex">
+          <div className="flex w-72 max-w-[85%] flex-col border-r border-white/10 bg-gray-950">
+            <div className="flex items-center justify-between px-4 py-4 border-b border-white/10">
+              <Logo />
+              <button onClick={() => setOpen(false)} aria-label="Close menu" className="text-2xl text-gray-400 hover:text-white">
+                ×
+              </button>
+            </div>
+            <SidebarBody user={user} isAdmin={isAdmin} onNavigate={() => setOpen(false)} />
+          </div>
+          <button className="flex-1 bg-black/60" aria-label="Close menu" onClick={() => setOpen(false)} />
+        </div>
+      )}
+    </>
   )
 }
