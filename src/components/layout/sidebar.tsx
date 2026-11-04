@@ -9,6 +9,7 @@ const navItems = [
   { href: '/dashboard', icon: '🏠', label: 'Dashboard' },
   { href: '/milestones', icon: '🏆', label: 'Milestones' },
   { href: '/journal', icon: '📓', label: 'Journal' },
+  { href: '/companion', icon: '💬', label: 'Sober Guide' },
   { href: '/community', icon: '🤝', label: 'Community' },
   { href: '/resources', icon: '📚', label: 'Resources' },
   { href: '/profile', icon: '👤', label: 'Profile' },
@@ -54,13 +55,16 @@ export function Sidebar({ user }: { user: User }) {
       </nav>
 
       {/* Crisis banner */}
-      <div className="mx-3 mb-3 p-3 bg-red-500/10 border border-red-500/20 rounded-xl">
+      <div className="mx-3 mb-3 p-3 bg-red-500/10 border border-red-500/20 rounded-xl space-y-1">
         <p className="text-red-300 text-xs font-medium">Need help right now?</p>
-        <a
-          href="tel:18006624357"
-          className="text-red-400 text-xs hover:text-red-300 transition-colors"
-        >
+        <a href="tel:988" className="block text-red-400 text-xs hover:text-red-300 transition-colors">
+          Call or text 988 (Crisis Lifeline)
+        </a>
+        <a href="tel:18006624357" className="block text-red-400 text-xs hover:text-red-300 transition-colors">
           SAMHSA: 1-800-662-4357
+        </a>
+        <a href="tel:911" className="block text-red-400 text-xs hover:text-red-300 transition-colors">
+          Emergency: 911
         </a>
       </div>
 
