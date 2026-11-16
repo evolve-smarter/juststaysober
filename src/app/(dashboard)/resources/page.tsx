@@ -68,7 +68,7 @@ export default async function ResourcesPage() {
                 </div>
                 <p className="text-gray-400 text-sm mb-3">{r.description}</p>
                 {r.city && (
-                  <p className="text-gray-500 text-xs mb-3">
+                  <p className="text-gray-400 text-xs mb-3">
                     📍 {r.city}, {r.state}
                   </p>
                 )}

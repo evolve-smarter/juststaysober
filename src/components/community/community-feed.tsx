@@ -220,7 +220,7 @@ export function CommunityFeed({
   function ActionLinks({ target, mine }: { target: Target; mine?: boolean }) {
     if (!currentUserId) return null
     return (
-      <span className="ml-auto flex gap-3 text-xs text-gray-600">
+      <span className="ml-auto flex gap-3 text-xs text-gray-400">
         {mine ? (
           <button onClick={() => deleteOwn(target)} className="hover:text-red-400">Delete</button>
         ) : (
@@ -271,7 +271,7 @@ export function CommunityFeed({
       {notice && (
         <div role="status" className="mb-4 flex items-start justify-between gap-3 rounded-lg border border-white/10 bg-gray-800 px-4 py-3 text-sm text-gray-200">
           <span>{notice}</span>
-          <button onClick={() => setNotice(null)} className="text-gray-500 hover:text-white" aria-label="Dismiss">×</button>
+          <button onClick={() => setNotice(null)} className="text-gray-400 hover:text-white" aria-label="Dismiss">×</button>
         </div>
       )}
       {postCrisis && (
@@ -289,6 +289,7 @@ export function CommunityFeed({
           <div className="w-full max-w-md rounded-xl border border-white/10 bg-gray-900 p-5">
             <h3 className="text-white font-semibold mb-3">Report this {reporting.type}</h3>
             <select
+              aria-label="Reason for report"
               value={reportReason}
               onChange={(e) => setReportReason(e.target.value)}
               className="w-full mb-3 bg-gray-800 border border-white/10 rounded-lg px-3 py-2 text-gray-200 text-sm"
@@ -298,12 +299,13 @@ export function CommunityFeed({
               ))}
             </select>
             <textarea
+              aria-label="Additional details (optional)"
               rows={3}
               maxLength={500}
               placeholder="Anything else we should know? (optional)"
               value={reportDetails}
               onChange={(e) => setReportDetails(e.target.value)}
-              className="w-full mb-3 bg-gray-800 border border-white/10 rounded-lg px-3 py-2 text-white text-sm placeholder-gray-500 resize-none"
+              className="w-full mb-3 bg-gray-800 border border-white/10 rounded-lg px-3 py-2 text-white text-sm placeholder-gray-400 resize-none"
             />
             <div className="flex justify-end gap-2">
               <button onClick={() => setReporting(null)} className="px-3 py-1.5 text-sm text-gray-400 hover:text-white">Cancel</button>
@@ -341,15 +343,17 @@ export function CommunityFeed({
       {currentUserId && (
         <form onSubmit={handlePost} className="bg-gray-900/60 border border-white/10 rounded-xl p-5 mb-6">
           <textarea
+            aria-label="Share with the community"
             rows={3}
             placeholder="Share something... a milestone, a struggle, a word of encouragement."
             value={newPost}
             onChange={(e) => setNewPost(e.target.value)}
-            className="w-full bg-gray-800 border border-white/10 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 resize-none transition-colors"
+            className="w-full bg-gray-800 border border-white/10 rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:border-purple-500 resize-none transition-colors"
           />
           <div className="flex flex-wrap items-center justify-between gap-3 mt-3">
             <div className="flex items-center gap-3">
               <select
+                aria-label="Post category"
                 value={postCategory}
                 onChange={(e) => setPostCategory(e.target.value)}
                 className="bg-gray-800 border border-white/10 rounded-lg px-3 py-1.5 text-gray-300 text-sm focus:outline-none"
@@ -386,7 +390,7 @@ export function CommunityFeed({
       {/* Posts */}
       <div className="space-y-4">
         {filtered.length === 0 && (
-          <div className="text-center py-12 text-gray-500">
+          <div className="text-center py-12 text-gray-400">
             <div className="text-4xl mb-3">💬</div>
             <p>No posts yet. Be the first to share.</p>
           </div>
@@ -415,8 +419,8 @@ export function CommunityFeed({
                     <span className="text-white font-medium text-sm">
                       {post.user.name ?? 'Anonymous'}
                     </span>
-                    <span className="text-gray-600 text-xs">·</span>
-                    <span className="text-gray-500 text-xs">
+                    <span className="text-gray-400 text-xs">·</span>
+                    <span className="text-gray-400 text-xs">
                       {formatDistanceToNow(new Date(post.createdAt), { addSuffix: true })}
                     </span>
                     <span className="text-xs bg-gray-800 text-gray-400 px-2 py-0.5 rounded-full ml-auto">
@@ -428,7 +432,7 @@ export function CommunityFeed({
 
               <p className="text-gray-200 leading-relaxed whitespace-pre-wrap">{post.content}</p>
 
-              <div className="flex items-center gap-4 mt-4 text-gray-500 text-sm">
+              <div className="flex items-center gap-4 mt-4 text-gray-400 text-sm">
                 <button
                   onClick={() => handleLike(post.id)}
                   disabled={!currentUserId}
@@ -453,11 +457,11 @@ export function CommunityFeed({
               {isCommentsOpen && (
                 <div className="mt-4 pt-4 border-t border-white/5">
                   {isLoadingComments ? (
-                    <p className="text-gray-500 text-sm text-center py-3">Loading comments…</p>
+                    <p className="text-gray-400 text-sm text-center py-3">Loading comments…</p>
                   ) : (
                     <>
                       {thread.length === 0 && (
-                        <p className="text-gray-600 text-sm mb-3">No comments yet. Be the first.</p>
+                        <p className="text-gray-400 text-sm mb-3">No comments yet. Be the first.</p>
                       )}
                       <div className="space-y-3 mb-4">
                         {thread.map((comment) => (
@@ -476,7 +480,7 @@ export function CommunityFeed({
                                 <span className="text-gray-300 text-xs font-medium">
                                   {comment.user.name ?? 'Anonymous'}
                                 </span>
-                                <span className="text-gray-600 text-xs">
+                                <span className="text-gray-400 text-xs">
                                   {formatDistanceToNow(new Date(comment.createdAt), { addSuffix: true })}
                                 </span>
                               </div>
@@ -495,14 +499,15 @@ export function CommunityFeed({
                           <div className="flex-1">
                             <input
                               type="text"
+                              aria-label="Write a comment"
                               placeholder="Write a comment…"
                               value={newComments[post.id] ?? ''}
                               onChange={(e) =>
                                 setNewComments((prev) => ({ ...prev, [post.id]: e.target.value }))
                               }
-                              className="w-full bg-gray-800 border border-white/10 rounded-lg px-3 py-2 text-white placeholder-gray-600 text-sm focus:outline-none focus:border-purple-500 transition-colors"
+                              className="w-full bg-gray-800 border border-white/10 rounded-lg px-3 py-2 text-white placeholder-gray-400 text-sm focus:outline-none focus:border-purple-500 transition-colors"
                             />
-                            <label className="flex items-center gap-1.5 mt-1.5 text-gray-600 text-xs cursor-pointer">
+                            <label className="flex items-center gap-1.5 mt-1.5 text-gray-400 text-xs cursor-pointer">
                               <input
                                 type="checkbox"
                                 checked={commentAnon[post.id] ?? false}

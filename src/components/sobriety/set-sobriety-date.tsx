@@ -35,10 +35,11 @@ export function SetSobrietyDate() {
   return (
     <form onSubmit={handleSubmit} className="space-y-4 text-left">
       <div>
-        <label className="block text-gray-300 text-sm font-medium mb-2">
+        <label htmlFor="sobriety-date" className="block text-gray-300 text-sm font-medium mb-2">
           My sobriety date
         </label>
         <input
+          id="sobriety-date"
           type="date"
           required
           max={new Date().toISOString().split('T')[0]}
@@ -49,10 +50,11 @@ export function SetSobrietyDate() {
       </div>
 
       <div>
-        <label className="block text-gray-300 text-sm font-medium mb-2">
+        <label htmlFor="sobriety-substance" className="block text-gray-300 text-sm font-medium mb-2">
           What am I recovering from?
         </label>
         <select
+          id="sobriety-substance"
           value={substance}
           onChange={(e) => setSubstance(e.target.value)}
           className="w-full bg-gray-800 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-purple-500 transition-colors"
@@ -78,7 +80,7 @@ export function SetSobrietyDate() {
         {loading ? 'Saving...' : 'Start my journey'}
       </button>
 
-      <p className="text-gray-500 text-xs text-center">
+      <p className="text-gray-400 text-xs text-center">
         You can change this later in your profile.
       </p>
     </form>

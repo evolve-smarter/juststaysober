@@ -33,7 +33,7 @@ export default async function JournalPage() {
       <JournalForm />
 
       {entries.length === 0 && (
-        <div className="text-center py-12 text-gray-500">
+        <div className="text-center py-12 text-gray-400">
           <div className="text-4xl mb-3">📓</div>
           <p>No entries yet. Write your first reflection above.</p>
         </div>

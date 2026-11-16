@@ -10,7 +10,7 @@ export default function NotFound() {
         <Link href="/dashboard" className="inline-block rounded-lg bg-purple-600 px-5 py-2.5 text-sm font-medium text-white hover:bg-purple-500">
           Go to your dashboard
         </Link>
-        <p className="mt-8 text-xs text-gray-500">
+        <p className="mt-8 text-xs text-gray-400">
           If you need help right now, call or text <a href="tel:988" className="underline text-purple-400">988</a>.
         </p>
       </div>

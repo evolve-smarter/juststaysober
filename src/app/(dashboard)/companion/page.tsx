@@ -9,7 +9,7 @@ export default function CompanionPage() {
       <p className="text-gray-400 mb-2">
         An AI companion for support and information, available any time.
       </p>
-      <p className="text-gray-500 text-sm mb-6">
+      <p className="text-gray-400 text-sm mb-6">
         It is not a therapist or a medical professional, and it can make mistakes. Your
         conversations are not saved. In an emergency call 911; for a crisis call or text 988.
       </p>

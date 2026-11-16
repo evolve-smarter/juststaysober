@@ -58,30 +58,32 @@ export function ProfileForm({ user, sobrietyRecord }: ProfileFormProps) {
         <h2 className="text-lg font-semibold text-white">Personal Info</h2>
 
         <div>
-          <label className="block text-gray-300 text-sm font-medium mb-2">Display Name</label>
+          <label htmlFor="profile-name" className="block text-gray-300 text-sm font-medium mb-2">Display Name</label>
           <input
+            id="profile-name"
             type="text"
             value={name}
             onChange={(e) => setName(e.target.value)}
             placeholder="How should we call you?"
-            className="w-full bg-gray-800 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 transition-colors"
+            className="w-full bg-gray-800 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:border-purple-500 transition-colors"
           />
         </div>
 
         <div>
-          <label className="block text-gray-300 text-sm font-medium mb-2">Bio</label>
+          <label htmlFor="profile-bio" className="block text-gray-300 text-sm font-medium mb-2">Bio</label>
           <textarea
+            id="profile-bio"
             value={bio}
             onChange={(e) => setBio(e.target.value)}
             rows={3}
             placeholder="A few words about your journey (optional)"
-            className="w-full bg-gray-800 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 resize-none transition-colors"
+            className="w-full bg-gray-800 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:border-purple-500 resize-none transition-colors"
           />
         </div>
 
         <div>
           <label className="block text-gray-300 text-sm font-medium mb-1">Email</label>
-          <p className="text-gray-500 text-sm">{user.email}</p>
+          <p className="text-gray-400 text-sm">{user.email}</p>
         </div>
       </div>
 
@@ -90,8 +92,9 @@ export function ProfileForm({ user, sobrietyRecord }: ProfileFormProps) {
         <h2 className="text-lg font-semibold text-white">Sobriety Record</h2>
 
         <div>
-          <label className="block text-gray-300 text-sm font-medium mb-2">Sobriety Date</label>
+          <label htmlFor="profile-date" className="block text-gray-300 text-sm font-medium mb-2">Sobriety Date</label>
           <input
+            id="profile-date"
             type="date"
             value={soberDate}
             max={new Date().toISOString().split('T')[0]}
@@ -101,8 +104,9 @@ export function ProfileForm({ user, sobrietyRecord }: ProfileFormProps) {
         </div>
 
         <div>
-          <label className="block text-gray-300 text-sm font-medium mb-2">Recovering from</label>
+          <label htmlFor="profile-substance" className="block text-gray-300 text-sm font-medium mb-2">Recovering from</label>
           <select
+            id="profile-substance"
             value={substance}
             onChange={(e) => setSubstance(e.target.value)}
             className="w-full bg-gray-800 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-purple-500 transition-colors"
@@ -125,7 +129,7 @@ export function ProfileForm({ user, sobrietyRecord }: ProfileFormProps) {
           />
           <div>
             <span className="text-gray-300 text-sm font-medium">Show sobriety days publicly</span>
-            <p className="text-gray-500 text-xs mt-0.5">
+            <p className="text-gray-400 text-xs mt-0.5">
               Let others see your sobriety counter on your profile.
             </p>
           </div>

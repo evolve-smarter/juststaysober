@@ -82,7 +82,7 @@ export function MilestoneCelebration({
           </a>
           <button
             onClick={close}
-            className="text-gray-500 hover:text-gray-300 text-sm transition-colors"
+            className="text-gray-400 hover:text-gray-300 text-sm transition-colors"
           >
             Maybe later
           </button>

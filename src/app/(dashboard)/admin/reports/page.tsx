@@ -62,12 +62,12 @@ export default async function AdminReportsPage() {
         {sorted.length} item{sorted.length === 1 ? '' : 's'} with open reports. Possible self-harm
         risk is listed first.
       </p>
-      <p className="text-gray-500 text-sm mb-8">
+      <p className="text-gray-400 text-sm mb-8">
         Author emails are shown to admins so action can be taken, including for anonymous posts.
         Do not share them.
       </p>
 
-      {sorted.length === 0 && <p className="text-gray-500">Nothing to review.</p>}
+      {sorted.length === 0 && <p className="text-gray-400">Nothing to review.</p>}
 
       <div className="space-y-4">
         {sorted.map((g) => (
@@ -84,7 +84,7 @@ export default async function AdminReportsPage() {
                   {REASON_LABEL[reason] ?? reason} ×{g.reasons.filter((x) => x === reason).length}
                 </span>
               ))}
-              <span className="text-gray-600 ml-auto">first reported {formatDistanceToNow(g.first, { addSuffix: true })}</span>
+              <span className="text-gray-400 ml-auto">first reported {formatDistanceToNow(g.first, { addSuffix: true })}</span>
             </div>
             <p className="text-gray-200 whitespace-pre-wrap mb-3">{g.content}</p>
             {g.details.length > 0 && (
@@ -92,7 +92,7 @@ export default async function AdminReportsPage() {
                 {g.details.map((d, i) => <li key={i}>{d}</li>)}
               </ul>
             )}
-            <p className="text-xs text-gray-500 mb-3">
+            <p className="text-xs text-gray-400 mb-3">
               Author: {g.authorEmail}{g.isAnon ? ' (posted anonymously)' : ''}
             </p>
             <ModerationActions type={g.type} id={g.id} hidden={g.hidden} />

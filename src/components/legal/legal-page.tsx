@@ -23,7 +23,7 @@ export function LegalPage({
         <div className="mt-8 space-y-4 leading-relaxed [&_h2]:mt-8 [&_h2]:text-xl [&_h2]:font-semibold [&_h2]:text-white [&_ul]:list-disc [&_ul]:pl-6 [&_ul]:space-y-1 [&_a]:text-purple-400 [&_a]:underline">
           {children}
         </div>
-        <p className="mt-12 text-sm text-gray-500">
+        <p className="mt-12 text-sm text-gray-400">
           If you are in danger, call 911. For a crisis, call or text{' '}
           <a href="tel:988" className="text-purple-400 underline">988</a>.
         </p>

@@ -69,7 +69,7 @@ export function CompanionChat() {
             </div>
           </div>
         ))}
-        {sending && <p className="text-gray-500 text-sm">Typing…</p>}
+        {sending && <p className="text-gray-400 text-sm">Typing…</p>}
         {error && <p className="text-red-300 text-sm">{error}</p>}
         <div ref={bottomRef} />
       </div>
@@ -82,11 +82,12 @@ export function CompanionChat() {
         className="mt-4 flex gap-2"
       >
         <input
+          aria-label="Message to Sober Guide"
           value={input}
           onChange={(e) => setInput(e.target.value)}
           maxLength={2000}
           placeholder="Type here…"
-          className="flex-1 rounded-xl bg-white/5 border border-white/10 px-4 py-2.5 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-purple-400"
+          className="flex-1 rounded-xl bg-white/5 border border-white/10 px-4 py-2.5 text-sm text-white placeholder-gray-400 focus:outline-none focus:border-purple-400"
         />
         <button
           type="submit"

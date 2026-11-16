@@ -44,7 +44,7 @@ export default async function LoginPage({
           <SignInForm />
         </div>
 
-        <p className="text-center text-gray-500 text-sm mt-6">
+        <p className="text-center text-gray-400 text-sm mt-6">
           New here?{' '}
           <Link href="/signup" className="text-purple-400 hover:text-purple-300 transition-colors">
             Create an account

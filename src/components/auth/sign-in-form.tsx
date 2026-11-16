@@ -56,7 +56,7 @@ export function SignInForm({ isSignup = false }: { isSignup?: boolean }) {
 
       <div className="flex items-center gap-3">
         <div className="flex-1 h-px bg-white/10" />
-        <span className="text-gray-500 text-xs">or continue with email</span>
+        <span className="text-gray-400 text-xs">or continue with email</span>
         <div className="flex-1 h-px bg-white/10" />
       </div>
 
@@ -64,11 +64,12 @@ export function SignInForm({ isSignup = false }: { isSignup?: boolean }) {
       <form onSubmit={handleEmail} className="space-y-3">
         <input
           type="email"
+          aria-label="Email address"
           required
           placeholder="your@email.com"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          className="w-full bg-gray-800 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 transition-colors"
+          className="w-full bg-gray-800 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:border-purple-500 transition-colors"
         />
         <button
           type="submit"
@@ -79,7 +80,7 @@ export function SignInForm({ isSignup = false }: { isSignup?: boolean }) {
         </button>
       </form>
 
-      <p className="text-gray-500 text-xs text-center">
+      <p className="text-gray-400 text-xs text-center">
         We&apos;ll send you a magic link — no password needed.
       </p>
     </div>

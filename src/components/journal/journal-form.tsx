@@ -70,18 +70,19 @@ export function JournalForm() {
       </div>
 
       <div>
-        <label className="block text-gray-300 text-sm font-medium mb-2">
+        <label htmlFor="journal-content" className="block text-gray-300 text-sm font-medium mb-2">
           What&apos;s on your mind?
         </label>
         <textarea
+          id="journal-content"
           required
           rows={5}
           placeholder="Write freely. This is private — only you can see your journal."
           value={content}
           onChange={(e) => setContent(e.target.value)}
-          className="w-full bg-gray-800 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 transition-colors resize-none"
+          className="w-full bg-gray-800 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:border-purple-500 transition-colors resize-none"
         />
-        <div className="text-gray-600 text-xs mt-1 text-right">{content.length}/2000</div>
+        <div className="text-gray-400 text-xs mt-1 text-right">{content.length}/2000</div>
       </div>
 
       {error && <p className="text-red-400 text-sm">{error}</p>}

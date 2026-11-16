@@ -22,14 +22,14 @@ export default function SignupPage() {
           <SignInForm isSignup />
         </div>
 
-        <p className="text-center text-gray-500 text-sm mt-6">
+        <p className="text-center text-gray-400 text-sm mt-6">
           Already have an account?{' '}
           <Link href="/login" className="text-purple-400 hover:text-purple-300 transition-colors">
             Sign in
           </Link>
         </p>
 
-        <p className="text-center text-gray-600 text-xs mt-4">
+        <p className="text-center text-gray-400 text-xs mt-4">
           By signing up, you agree to our{' '}
           <Link href="/terms" className="underline">Terms</Link> and{' '}
           <Link href="/privacy" className="underline">Privacy Policy</Link>.

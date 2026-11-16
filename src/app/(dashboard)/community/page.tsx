@@ -45,7 +45,7 @@ export default async function CommunityPage() {
           <li>Don&apos;t share where to get substances, or anyone else&apos;s private information.</li>
           <li>Use Report if something is wrong. Use Block to stop seeing someone.</li>
         </ul>
-        <p className="mt-3 text-gray-500">
+        <p className="mt-3 text-gray-400">
           <Link href="/guidelines" className="underline">Read the full guidelines</Link>. If you or
           someone else is in danger, call 911. For a crisis, call or text 988.
         </p>

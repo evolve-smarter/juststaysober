@@ -85,11 +85,11 @@ function SidebarBody({ user, isAdmin, onNavigate }: { user: User; isAdmin: boole
             <p className="text-white text-sm font-medium truncate">
               {user.name ?? 'Anonymous'}
             </p>
-            <p className="text-gray-500 text-xs truncate">{user.email}</p>
+            <p className="text-gray-400 text-xs truncate">{user.email}</p>
           </div>
           <button
             onClick={() => signOut({ callbackUrl: '/' })}
-            className="text-gray-500 hover:text-white transition-colors text-xs"
+            className="text-gray-400 hover:text-white transition-colors text-xs"
             title="Sign out"
           >
             ↩

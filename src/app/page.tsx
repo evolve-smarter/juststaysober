@@ -114,12 +114,12 @@ export default function LandingPage() {
             ].map((item) => (
               <div key={item.label} className="text-center">
                 <div className="text-4xl md:text-5xl font-bold text-white font-mono">{item.value}</div>
-                <div className="text-gray-500 text-xs mt-1 uppercase tracking-wider">{item.label}</div>
+                <div className="text-gray-400 text-xs mt-1 uppercase tracking-wider">{item.label}</div>
               </div>
             ))}
           </div>
           <div className="text-purple-400 font-medium">247 days of freedom 🌈</div>
-          <p className="text-gray-500 text-xs mt-2">This is a preview. Sign up to track your real time.</p>
+          <p className="text-gray-400 text-xs mt-2">This is a preview. Sign up to track your real time.</p>
         </div>
       </section>
 
@@ -139,7 +139,7 @@ export default function LandingPage() {
             >
               <div className="text-3xl mb-2">{m.emoji}</div>
               <div className="text-white font-semibold text-sm">{m.label}</div>
-              <div className="text-gray-500 text-xs mt-1">{m.days} {m.days === 1 ? 'day' : 'days'}</div>
+              <div className="text-gray-400 text-xs mt-1">{m.days} {m.days === 1 ? 'day' : 'days'}</div>
             </div>
           ))}
         </div>
@@ -186,7 +186,7 @@ export default function LandingPage() {
       </section>
 
       {/* Footer */}
-      <footer className="border-t border-white/10 px-6 py-8 text-center text-gray-500 text-sm">
+      <footer className="border-t border-white/10 px-6 py-8 text-center text-gray-400 text-sm">
         <p>
           If you&apos;re in crisis, call or text{' '}
           <a href="tel:988" className="text-purple-400 hover:underline">988</a>, call SAMHSA at{' '}
