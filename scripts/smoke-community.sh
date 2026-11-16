@@ -3,7 +3,7 @@
 # Needs the app running on localhost:3000 with ADMIN_EMAILS=admin@example.com against a TEST db,
 # after scripts/smoke-reset.sh. Verified: 52/52 on 2026-11-04.
 export PGHOST=${PGHOST:-/tmp} PGPORT=${PGPORT:-5433}
-B=localhost:3000; J='Content-Type: application/json'
+B=${BASE:-localhost:3000}; J='Content-Type: application/json'
 c() { echo "-H"; echo "Cookie: authjs.session-token=tok$1"; }
 req() { local u=$1 m=$2 p=$3 d=$4; if [ -n "$u" ]; then curl -s -X $m -H "$J" -H "Cookie: authjs.session-token=tok$u" -w '\n%{http_code}' $B$p ${d:+-d "$d"}; else curl -s -X $m -H "$J" -w '\n%{http_code}' $B$p ${d:+-d "$d"}; fi; }
 pass=0; fail=0
@@ -82,7 +82,7 @@ req 6 POST /api/posts '{"content":"will vanish"}' >/dev/null
 check "no confirm -> 400"                 400 "$(req 6 DELETE /api/account '{}' | code)"
 check "delete account"                    200 "$(req 6 DELETE /api/account '{"confirm":"DELETE"}' | code)"
 check "session invalid after deletion"   307 "$(curl -s -o /dev/null -w '%{http_code}' -H 'Cookie: authjs.session-token=tok6' $B/dashboard)"
-check "user's posts gone"                  0 "$(psql -U postgres jss -qAt -c "select count(*) from \"Post\" where content='will vanish'")"
+check "user's posts gone"                  0 "$(${PSQL:-psql -U postgres jss} -qAt -c "select count(*) from \"Post\" where content='will vanish'")"
 
 echo "== public pages"
 for p in /privacy /terms /guidelines; do check "$p -> 200" 200 "$(curl -s -o /dev/null -w '%{http_code}' $B$p)"; done

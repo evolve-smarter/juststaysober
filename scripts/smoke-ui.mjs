@@ -22,7 +22,7 @@ async function as(token) {
 
 // u4 (Casey) reports a post from the community page
 let page = await as('tok4')
-await page.goto('http://localhost:3000/community')
+await page.goto('' + (process.env.BASE_URL || 'http://localhost:3000') + '/community')
 ok('community page loads with feed', await page.locator('text=Community guidelines').count() > 0)
 await page.screenshot({ path: `${out}/community.png` })
 const reportBtn = page.locator('button', { hasText: /^Report$/ }).first()
@@ -50,7 +50,7 @@ await page.waitForTimeout(800)
 ok('own post removed after Delete', await page.locator('text=I want to die tonight').count() === 0)
 
 // companion page
-await page.goto('http://localhost:3000/companion')
+await page.goto('' + (process.env.BASE_URL || 'http://localhost:3000') + '/companion')
 ok('companion page shows disclaimer', (await page.locator('body').innerText()).includes('not a therapist'))
 await page.fill('input[placeholder="Type here…"]', 'I want to kill myself')
 await page.locator('button', { hasText: 'Send' }).click()
@@ -60,7 +60,7 @@ await page.screenshot({ path: `${out}/companion.png` })
 
 // admin
 page = await as('tok3')
-await page.goto('http://localhost:3000/admin/reports')
+await page.goto('' + (process.env.BASE_URL || 'http://localhost:3000') + '/admin/reports')
 ok('admin sees moderation queue', (await page.locator('h1').innerText()).includes('Moderation'))
 ok('admin nav link present', await page.locator('a', { hasText: 'Moderation' }).count() > 0)
 await page.screenshot({ path: `${out}/admin.png` })
@@ -69,12 +69,12 @@ if (await hide.count()) { await hide.click(); await page.waitForTimeout(1000) }
 
 // non-admin
 page = await as('tok4')
-const r = await page.goto('http://localhost:3000/admin/reports')
+const r = await page.goto('' + (process.env.BASE_URL || 'http://localhost:3000') + '/admin/reports')
 ok('non-admin gets 404 on admin page', r.status() === 404)
-ok('non-admin has no Moderation link', await (async()=>{await page.goto('http://localhost:3000/dashboard'); return await page.locator('a', { hasText: 'Moderation' }).count() === 0})())
+ok('non-admin has no Moderation link', await (async()=>{await page.goto('' + (process.env.BASE_URL || 'http://localhost:3000') + '/dashboard'); return await page.locator('a', { hasText: 'Moderation' }).count() === 0})())
 
 // profile delete flow visible
-await page.goto('http://localhost:3000/profile')
+await page.goto('' + (process.env.BASE_URL || 'http://localhost:3000') + '/profile')
 ok('profile has Delete my account section', await page.locator('text=Delete my account').count() > 0)
 
 await browser.close()

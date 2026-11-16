@@ -1,0 +1,63 @@
+# JustStaysober on a single VPS (e.g. Hostinger VPS with Docker). Run from the deploy/ folder:
+#   cp .env.example .env   # fill it in; never commit .env
+#   docker compose up -d --build
+# Services: db (PostgreSQL, not exposed to the internet), app (Next.js), caddy (HTTPS + proxy).
+name: juststaysober
+
+services:
+  db:
+    image: ${POSTGRES_IMAGE:-postgres:16-alpine}
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: jss
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}
+      POSTGRES_DB: jss
+    volumes:
+      - dbdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U jss -d jss"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  app:
+    build:
+      context: ..
+      args:
+        NODE_IMAGE: ${NODE_IMAGE:-node:22-alpine}
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    env_file: .env
+    environment:
+      DATABASE_URL: postgresql://jss:${POSTGRES_PASSWORD}@db:5432/jss
+      AUTH_TRUST_HOST: "true"
+    # Check env, apply migrations, load starter data, then start the server.
+    command: ["sh", "-c", "sh deploy/predeploy.sh && node server.js"]
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:3000/api/health | grep -q ok"]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+      start_period: 40s
+
+  caddy:
+    image: ${CADDY_IMAGE:-caddy:2-alpine}
+    restart: unless-stopped
+    depends_on:
+      - app
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      DOMAIN: ${DOMAIN:?set DOMAIN in .env}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddydata:/data
+      - caddyconfig:/config
+
+volumes:
+  dbdata:
+  caddydata:
+  caddyconfig:

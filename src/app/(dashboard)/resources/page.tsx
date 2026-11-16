@@ -26,7 +26,7 @@ export default async function ResourcesPage() {
     <div className="p-4 md:p-8 max-w-4xl mx-auto">
       <h1 className="text-3xl font-bold text-white mb-2">Resources</h1>
       <p className="text-gray-400 mb-8">
-        Vetted support resources for your recovery journey.
+        Support resources for your recovery journey. We list them for convenience and do not endorse or control them.
       </p>
 
       {/* Crisis banner */}
@@ -65,11 +65,6 @@ export default async function ResourcesPage() {
               >
                 <div className="flex items-start justify-between gap-2 mb-2">
                   <h3 className="text-white font-medium">{r.name}</h3>
-                  {r.isVerified && (
-                    <span className="text-xs bg-green-500/10 text-green-400 border border-green-500/20 px-2 py-0.5 rounded-full flex-shrink-0">
-                      ✓ Verified
-                    </span>
-                  )}
                 </div>
                 <p className="text-gray-400 text-sm mb-3">{r.description}</p>
                 {r.city && (

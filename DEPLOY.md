@@ -4,6 +4,9 @@ Plain-language checklist. Anything marked **VERIFY** came from general knowledge
 not from a test, so check it against the provider's current docs. Never paste keys into chat or
 commit them; put them in the host's environment-variable settings.
 
+**Hosting choice: Hostinger VPS.** See `deploy/HOSTINGER.md` for the VPS setup (Docker Compose, HTTPS,
+backups). The Railway steps below remain valid if you choose a managed host instead.
+
 ## 1. Accounts you create (owner)
 | What | Why | Cost note |
 |---|---|---|

@@ -1,4 +1,6 @@
-FROM node:22-alpine AS base
+# Base image is overridable (e.g. a registry mirror when Docker Hub rate-limits pulls).
+ARG NODE_IMAGE=node:22-alpine
+FROM ${NODE_IMAGE} AS base
 
 # Install dependencies only when needed
 FROM base AS deps

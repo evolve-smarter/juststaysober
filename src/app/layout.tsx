@@ -1,4 +1,4 @@
-import type { Metadata } from 'next'
+import type { Metadata, Viewport } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
 
@@ -12,11 +12,18 @@ export const metadata: Metadata = {
   description:
     'Track your sobriety journey, celebrate milestones, and connect with a community that understands. One day at a time.',
   keywords: ['sobriety', 'recovery', 'addiction', 'sober', 'AA', 'NA', 'support'],
+  appleWebApp: { capable: true, title: 'JustStaySober', statusBarStyle: 'black-translucent' },
   openGraph: {
     title: 'JustStaySober',
     description: 'Your sobriety journey, tracked and celebrated.',
     type: 'website',
   },
+}
+
+export const viewport: Viewport = {
+  themeColor: '#1e1b4b',
+  width: 'device-width',
+  initialScale: 1,
 }
 
 export default function RootLayout({

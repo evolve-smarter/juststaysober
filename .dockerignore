@@ -13,3 +13,5 @@ BUILD-LOG.md
 DEPLOY-PROXY.md
 index.html
 *.log
+deploy/backups
+deploy/.env
